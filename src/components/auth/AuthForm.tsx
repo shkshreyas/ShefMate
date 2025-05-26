@@ -51,7 +51,7 @@ export function AuthForm() {
           description: 'You have been logged in.',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
         description: error.message,

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@clerk/clerk-react';
 
@@ -63,7 +62,7 @@ const PLANS: Plan[] = [
 ];
 
 export function ClerkPricingTable() {
-  const { userId, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
 
   const handleSubscribe = async (planId: string) => {
     // In a real implementation, this would redirect to Clerk's checkout flow
