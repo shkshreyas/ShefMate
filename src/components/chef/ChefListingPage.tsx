@@ -360,7 +360,7 @@ export function ChefListingPage() {
                   <Button className="w-full" asChild>
                     <a href={`tel:${chef.phone_number}`}>
                       <Phone className="w-4 h-4 mr-2" />
-                      Contact Chef
+                      Contact Shef
                     </a>
                   </Button>
                 </CardFooter>

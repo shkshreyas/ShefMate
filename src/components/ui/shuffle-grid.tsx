@@ -2,30 +2,41 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type ShuffleHeroProps = {
   onBookClick?: () => void;
 };
 
 export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
+  const navigate = useNavigate();
+  
+  const handleBookClick = () => {
+    if (onBookClick) {
+      onBookClick();
+    } else {
+      navigate('/chef');
+    }
+  };
+  
   return (
     <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto min-h-screen">
       <div>
         <span className="block mb-4 text-xs md:text-sm text-primary font-medium">
-          Welcome to ChefMate
+          Welcome to ShefMate
         </span>
         <h3 className="text-4xl md:text-6xl font-serif font-bold text-foreground">
-          Your Personal Chef Buddy
+          Your Personal Shef Buddy
         </h3>
         <p className="text-base md:text-lg text-muted-foreground my-4 md:my-6">
-          Experience personalized culinary excellence with our on-demand chef service. 
-          Let professional chefs bring restaurant-quality dining to your home.
+          Experience personalized culinary excellence with our on-demand shef service. 
+          Let professional shefs bring restaurant-quality dining to your home.
         </p>
         <button 
-          onClick={onBookClick}
-          className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md transition-all hover:bg-primary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          onClick={handleBookClick}
+          className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md transition-all hover:bg-primary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative z-10 cursor-pointer"
         >
-          Book a Chef
+          Book a Shef
         </button>
       </div>
       <ShuffleGrid />

@@ -155,3 +155,25 @@ button:focus-visible {
 .footer-social-icon {
   @apply text-primary hover:text-primary/80 transition-colors;
 }
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  .footer-links a {
+    display: block;
+    padding: 6px 0;
+  }
+  
+  .footer-social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: hsl(var(--secondary));
+  }
+}

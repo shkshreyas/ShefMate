@@ -85,7 +85,7 @@ export function ChefRegistrationForm() {
     if (!user) {
       toast({
         title: 'Error',
-        description: 'You must be logged in to create a chef profile.',
+        description: 'You must be logged in to create a Shef profile.',
         variant: 'destructive',
       });
       return;
@@ -122,7 +122,7 @@ export function ChefRegistrationForm() {
       if (existingChef) {
         toast({
           title: 'Error',
-          description: 'You already have a chef profile.',
+          description: 'You already have a Shef profile.',
           variant: 'destructive',
         });
         return;
@@ -164,7 +164,7 @@ export function ChefRegistrationForm() {
       console.log('Chef profile created successfully:', chef);
       toast({
         title: 'Success',
-        description: 'Chef profile created successfully!',
+        description: 'Shef profile created successfully!',
       });
 
       // Insert locations
@@ -218,7 +218,7 @@ export function ChefRegistrationForm() {
 
       toast({
         title: 'Success!',
-        description: 'Your chef profile has been created successfully.',
+        description: 'Your shef profile has been created successfully.',
       });
 
       // Navigate to the chef listing page after successful registration
@@ -246,10 +246,10 @@ export function ChefRegistrationForm() {
         <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] sm:max-w-[600px] w-full bg-background p-6 rounded-lg shadow-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold mb-2">
-              Create Your Chef Profile
+              Create Your Shef Profile
             </DialogTitle>
             <DialogDescription className="text-muted-foreground mb-6">
-              Fill out the form below to create your chef profile and start accepting bookings.
+              Fill out the form below to create your Shef profile and start accepting bookings.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

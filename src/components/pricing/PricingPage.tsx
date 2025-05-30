@@ -11,7 +11,7 @@ export function PricingPage() {
       <div className="container">
         <div className="max-w-3xl mx-auto text-center mb-8">
           <h1 className="text-4xl md:text-6xl font-serif font-bold text-primary mb-6">
-            Book a Chef Today
+            Book a Shef Today
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
             Choose a subscription plan that works for your culinary needs. From casual home cooking 

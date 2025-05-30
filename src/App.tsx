@@ -1,28 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HeroDemo1 } from './components/demos/HeroGalleryDemo';
 import { ShuffleHero } from './components/ui/shuffle-grid';
-import { UserButton, useUser } from '@clerk/clerk-react';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PricingPage } from './components/pricing/PricingPage';
 import { ChefListingPage } from './components/chef/ChefListingPage';
 import { ChefRegistrationForm } from './components/chef/ChefRegistrationForm';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { MobileTabBar } from './components/ui/mobile-tab-bar';
+import { Header } from './components/ui/header';
 import './App.css';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [isChefRegistrationOpen, setIsChefRegistrationOpen] = useState(false);
-  const { user } = useUser();
   const navigate = useNavigate();
 
-  const handleOpenPricing = () => {
-    setIsPricingOpen(true);
-  };
-
-  const handleOpenChefRegistration = () => {
-    setIsChefRegistrationOpen(true);
-  };
+  // Listen for custom events from the Header component
+  useEffect(() => {
+    const handleOpenPricing = () => setIsPricingOpen(true);
+    const handleOpenChefRegistration = () => setIsChefRegistrationOpen(true);
+    
+    window.addEventListener('open-pricing', handleOpenPricing);
+    window.addEventListener('open-chef-registration', handleOpenChefRegistration);
+    
+    return () => {
+      window.removeEventListener('open-pricing', handleOpenPricing);
+      window.removeEventListener('open-chef-registration', handleOpenChefRegistration);
+    };
+  }, []);
 
   const handleBookChef = () => {
     navigate('/chefs');
@@ -30,37 +35,11 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-3xl font-serif font-bold text-primary">ChefMate</h1>
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline"
-              onClick={handleBookChef}
-              className="font-medium"
-            >
-              Book a Chef
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={handleOpenPricing}
-              className="font-medium"
-            >
-              View Plans
-            </Button>
-            {user && (
-              <Button 
-                variant="outline"
-                onClick={handleOpenChefRegistration}
-                className="font-medium"
-              >
-                Register as Chef
-              </Button>
-            )}
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </div>
-      </header>
+      {/* Header is now a separate component */}
+      <Header />
+      
+      {/* Add padding for the header */}
+      <div className="pt-20"></div>
       
       {/* Main Hero Section */}
       <ShuffleHero onBookClick={handleBookChef} />
@@ -83,6 +62,64 @@ function AppContent() {
           <ChefRegistrationForm />
         </DialogContent>
       </Dialog>
+      
+      {/* Mobile Tab Bar - Only visible on mobile */}
+      <MobileTabBar />
+      
+      {/* Add padding at the bottom for mobile to account for the tab bar */}
+      <div className="h-16 md:h-0"></div>
+    </div>
+  );
+}
+
+function ChefListingWithHeader() {
+  const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const [isChefRegistrationOpen, setIsChefRegistrationOpen] = useState(false);
+
+  // Listen for custom events from the Header component
+  useEffect(() => {
+    const handleOpenPricing = () => setIsPricingOpen(true);
+    const handleOpenChefRegistration = () => setIsChefRegistrationOpen(true);
+    
+    window.addEventListener('open-pricing', handleOpenPricing);
+    window.addEventListener('open-chef-registration', handleOpenChefRegistration);
+    
+    return () => {
+      window.removeEventListener('open-pricing', handleOpenPricing);
+      window.removeEventListener('open-chef-registration', handleOpenChefRegistration);
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Header is now a separate component */}
+      <Header />
+      
+      {/* Add padding for the header */}
+      <div className="pt-20"></div>
+      
+      {/* Chef Listing Page */}
+      <ChefListingPage />
+      
+      {/* Pricing Dialog */}
+      <Dialog open={isPricingOpen} onOpenChange={setIsPricingOpen}>
+        <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-y-auto">
+          <PricingPage />
+        </DialogContent>
+      </Dialog>
+
+      {/* Chef Registration Dialog */}
+      <Dialog open={isChefRegistrationOpen} onOpenChange={setIsChefRegistrationOpen}>
+        <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-y-auto">
+          <ChefRegistrationForm />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Mobile Tab Bar - Only visible on mobile */}
+      <MobileTabBar />
+      
+      {/* Add padding at the bottom for mobile to account for the tab bar */}
+      <div className="h-16 md:h-0"></div>
     </div>
   );
 }
@@ -92,7 +129,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<AppContent />} />
-        <Route path="/chefs" element={<ChefListingPage />} />
+        <Route path="/chefs" element={<ChefListingWithHeader />} />
       </Routes>
     </Router>
   );
