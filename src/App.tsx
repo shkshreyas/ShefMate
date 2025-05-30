@@ -1,17 +1,31 @@
 import { useState } from 'react';
 import { HeroDemo1 } from './components/demos/HeroGalleryDemo';
 import { ShuffleHero } from './components/ui/shuffle-grid';
-import { UserButton } from '@clerk/clerk-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PricingPage } from './components/pricing/PricingPage';
+import { ChefListingPage } from './components/chef/ChefListingPage';
+import { ChefRegistrationForm } from './components/chef/ChefRegistrationForm';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const [isChefRegistrationOpen, setIsChefRegistrationOpen] = useState(false);
+  const { user } = useUser();
+  const navigate = useNavigate();
 
   const handleOpenPricing = () => {
     setIsPricingOpen(true);
+  };
+
+  const handleOpenChefRegistration = () => {
+    setIsChefRegistrationOpen(true);
+  };
+
+  const handleBookChef = () => {
+    navigate('/chefs');
   };
 
   return (
@@ -22,18 +36,34 @@ function App() {
           <div className="flex items-center gap-4">
             <Button 
               variant="outline"
-              onClick={handleOpenPricing}
+              onClick={handleBookChef}
               className="font-medium"
             >
               Book a Chef
             </Button>
+            <Button 
+              variant="outline"
+              onClick={handleOpenPricing}
+              className="font-medium"
+            >
+              View Plans
+            </Button>
+            {user && (
+              <Button 
+                variant="outline"
+                onClick={handleOpenChefRegistration}
+                className="font-medium"
+              >
+                Register as Chef
+              </Button>
+            )}
             <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </header>
       
       {/* Main Hero Section */}
-      <ShuffleHero onBookClick={handleOpenPricing} />
+      <ShuffleHero onBookClick={handleBookChef} />
       
       {/* Secondary Scrolling Hero Section with Footer */}
       <section className="relative">
@@ -46,7 +76,25 @@ function App() {
           <PricingPage />
         </DialogContent>
       </Dialog>
+
+      {/* Chef Registration Dialog */}
+      <Dialog open={isChefRegistrationOpen} onOpenChange={setIsChefRegistrationOpen}>
+        <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-y-auto">
+          <ChefRegistrationForm />
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<AppContent />} />
+        <Route path="/chefs" element={<ChefListingPage />} />
+      </Routes>
+    </Router>
   );
 }
 
