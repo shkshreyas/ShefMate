@@ -11,7 +11,6 @@ interface MoreMenuProps {
 }
 
 export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
-  const navigate = useNavigate();
   const { user } = useUser();
   const [email, setEmail] = useState('');
   
