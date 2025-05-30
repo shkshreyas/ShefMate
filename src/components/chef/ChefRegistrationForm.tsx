@@ -111,7 +111,12 @@ export function ChefRegistrationForm() {
 
       if (checkError) {
         console.error('Error checking existing chef:', checkError);
-        throw checkError;
+        toast({
+          title: 'Error',
+          description: 'Failed to check existing profile. Please try again.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       if (existingChef) {
@@ -139,14 +144,28 @@ export function ChefRegistrationForm() {
 
       if (chefError) {
         console.error('Error creating chef profile:', chefError);
-        throw chefError;
+        toast({
+          title: 'Error',
+          description: `Failed to create chef profile: ${chefError.message}`,
+          variant: 'destructive',
+        });
+        return;
       }
 
       if (!chef) {
-        throw new Error('Failed to create chef profile');
+        toast({
+          title: 'Error',
+          description: 'Failed to create chef profile. No data returned.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       console.log('Chef profile created successfully:', chef);
+      toast({
+        title: 'Success',
+        description: 'Chef profile created successfully!',
+      });
 
       // Insert locations
       if (data.locations.length > 0) {
@@ -162,7 +181,13 @@ export function ChefRegistrationForm() {
 
         if (locationsError) {
           console.error('Error adding locations:', locationsError);
-          throw locationsError;
+          toast({
+            title: 'Warning',
+            description: 'Profile created but failed to add locations.',
+            variant: 'destructive',
+          });
+        } else {
+          console.log('Locations added successfully');
         }
       }
 
@@ -181,7 +206,13 @@ export function ChefRegistrationForm() {
 
         if (servicesError) {
           console.error('Error adding services:', servicesError);
-          throw servicesError;
+          toast({
+            title: 'Warning',
+            description: 'Profile created but failed to add services.',
+            variant: 'destructive',
+          });
+        } else {
+          console.log('Services added successfully');
         }
       }
 
