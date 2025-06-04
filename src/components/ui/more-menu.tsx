@@ -23,10 +23,16 @@ export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
   return (
     <div className="fixed inset-0 bg-background z-50 overflow-y-auto pb-16">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 relative">
           <h2 className="text-xl font-serif font-bold text-primary">More Options</h2>
-          <button onClick={onClose} className="p-2">
-            <X size={24} />
+          <button 
+            onClick={onClose} 
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            type="button"
+            aria-label="Close menu"
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
           </button>
         </div>
         
@@ -74,10 +80,10 @@ export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
             <a href="#" className="p-2 bg-secondary rounded-full">
               <Twitter size={20} />
             </a>
-            <a href="#" className="p-2 bg-secondary rounded-full">
+            <a href="https://www.instagram.com/shefmate?igsh=bjRjcTU4YTdpc2Fj" className="p-2 bg-secondary rounded-full">
               <Instagram size={20} />
             </a>
-            <a href="#" className="p-2 bg-secondary rounded-full">
+            <a href="https://www.linkedin.com/company/107474241" className="p-2 bg-secondary rounded-full">
               <Linkedin size={20} />
             </a>
           </div>

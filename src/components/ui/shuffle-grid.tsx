@@ -32,12 +32,21 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
           Experience personalized culinary excellence with our on-demand shef service. 
           Let professional shefs bring restaurant-quality dining to your home.
         </p>
-        <button 
-          onClick={handleBookClick}
-          className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md transition-all hover:bg-primary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative z-10 cursor-pointer"
-        >
-          Book a Shef
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button 
+            onClick={handleBookClick}
+            className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md transition-all hover:bg-primary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative z-10 cursor-pointer"
+          >
+            Book a Shef
+          </button>
+          <a 
+            href="tel:6202372739"
+            className="relative inline-flex items-center justify-center font-medium py-2 px-4 rounded-md transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer overflow-hidden group z-10"
+          >
+            <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 group-hover:scale-110"></span>
+            <span className="relative text-white font-medium">Advanced Book</span>
+          </a>
+        </div>
       </div>
       <ShuffleGrid />
     </section>

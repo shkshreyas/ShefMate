@@ -28,7 +28,7 @@ const plans: PricingPlan[] = [
     id: "premium",
     name: "Premium",
     description: "Our most popular plan for food lovers",
-    price: 19.99,
+    price: 0,
     popular: true,
     features: [
       "Access to 500+ recipes",
@@ -75,48 +75,49 @@ export function PricingTable() {
   };
 
   return (
-    <div className="py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <div className="py-12 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-serif font-bold tracking-tight text-primary sm:text-5xl">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-serif font-bold tracking-tight text-primary">
             Simple, Transparent Pricing
           </h2>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+          <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-8 text-muted-foreground">
             Choose the perfect plan that suits your culinary journey.
           </p>
         </div>
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-3">
+        
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`flex flex-col rounded-3xl p-8 ring-1 ring-muted sm:p-10 ${
+              className={`flex flex-col rounded-3xl p-6 sm:p-8 ring-1 ring-muted ${
                 plan.popular
                   ? "relative bg-primary/5 ring-primary shadow-md z-10 sm:-mx-4 sm:mt-0 lg:-mx-4"
                   : "bg-background ring-muted/60"
               }`}
             >
               {plan.popular && (
-                <div className="absolute top-0 right-6 -translate-y-1/2 rounded-full bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground">
+                <div className="absolute top-0 right-4 sm:right-6 -translate-y-1/2 rounded-full bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground">
                   Most popular
                 </div>
               )}
               <div className="p-2">
                 <h3 
-                  className={`text-2xl font-serif font-bold ${
+                  className={`text-xl sm:text-2xl font-serif font-bold ${
                     plan.popular ? "text-primary" : "text-foreground"
                   }`}
                 >
                   {plan.name}
                 </h3>
-                <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                <p className="mt-3 sm:mt-4 text-sm leading-6 text-muted-foreground">
                   {plan.description}
                 </p>
-                <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className="text-4xl font-bold tracking-tight">${plan.price}</span>
+                <p className="mt-4 sm:mt-6 flex items-baseline gap-x-1">
+                  <span className="text-3xl sm:text-4xl font-bold tracking-tight">${plan.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">/month</span>
                 </p>
                 <Button
-                  className={`mt-6 w-full ${
+                  className={`mt-4 sm:mt-6 w-full ${
                     plan.popular
                       ? ""
                       : "bg-primary/80 hover:bg-primary"
@@ -126,10 +127,11 @@ export function PricingTable() {
                   Subscribe
                 </Button>
               </div>
-              <div className="mt-8 space-y-3">
+              
+              <div className="mt-6 sm:mt-8 space-y-4">
                 {plan.features.map((feature) => (
                   <div key={feature} className="flex gap-3">
-                    <Check className="h-6 w-5 flex-none text-primary" />
+                    <Check className="h-5 w-5 flex-none text-primary" />
                     <span className="text-sm text-muted-foreground">{feature}</span>
                   </div>
                 ))}

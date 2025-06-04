@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { MobileTabBar } from './components/ui/mobile-tab-bar';
 import { Header } from './components/ui/header';
 import './App.css';
+import { BlogsTestimonials } from '@/components/blocks/blogs-testimonials';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -19,13 +20,16 @@ function AppContent() {
   useEffect(() => {
     const handleOpenPricing = () => setIsPricingOpen(true);
     const handleOpenChefRegistration = () => setIsChefRegistrationOpen(true);
+    const handleCloseChefRegistration = () => setIsChefRegistrationOpen(false);
     
     window.addEventListener('open-pricing', handleOpenPricing);
     window.addEventListener('open-chef-registration', handleOpenChefRegistration);
+    window.addEventListener('close-chef-registration', handleCloseChefRegistration);
     
     return () => {
       window.removeEventListener('open-pricing', handleOpenPricing);
       window.removeEventListener('open-chef-registration', handleOpenChefRegistration);
+      window.removeEventListener('close-chef-registration', handleCloseChefRegistration);
     };
   }, []);
 
@@ -43,6 +47,9 @@ function AppContent() {
       
       {/* Main Hero Section */}
       <ShuffleHero onBookClick={handleBookChef} />
+      
+      {/* Blogs and Testimonials Section */}
+      <BlogsTestimonials />
       
       {/* Secondary Scrolling Hero Section with Footer */}
       <section className="relative">
@@ -80,13 +87,16 @@ function ChefListingWithHeader() {
   useEffect(() => {
     const handleOpenPricing = () => setIsPricingOpen(true);
     const handleOpenChefRegistration = () => setIsChefRegistrationOpen(true);
+    const handleCloseChefRegistration = () => setIsChefRegistrationOpen(false);
     
     window.addEventListener('open-pricing', handleOpenPricing);
     window.addEventListener('open-chef-registration', handleOpenChefRegistration);
+    window.addEventListener('close-chef-registration', handleCloseChefRegistration);
     
     return () => {
       window.removeEventListener('open-pricing', handleOpenPricing);
       window.removeEventListener('open-chef-registration', handleOpenChefRegistration);
+      window.removeEventListener('close-chef-registration', handleCloseChefRegistration);
     };
   }, []);
 

@@ -221,8 +221,8 @@ export function ChefRegistrationForm() {
         description: 'Your shef profile has been created successfully.',
       });
 
-      // Navigate to the chef listing page after successful registration
-      navigate('/chefs');
+      // Navigate to the homepage page after successful registration
+      navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
       toast({
@@ -238,7 +238,9 @@ export function ChefRegistrationForm() {
   return (
     <Dialog open={true} onOpenChange={(open) => {
       if (!open) {
-        navigate('/chefs');
+        // Close the dialog and navigate back
+        window.dispatchEvent(new CustomEvent('close-chef-registration'));
+        navigate('/');
       }
     }}>
       <DialogPortal>
