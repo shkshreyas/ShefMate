@@ -8,21 +8,21 @@ export function BlogsTestimonials() {
       title: "The Rise of Home Chefs in Urban India",
       description: "Discover how professional chefs are revolutionizing home dining experiences across major Indian cities.",
       image: "https://c.ndtvimg.com/2023-08/r5mifhb_home-chef_625x300_03_August_23.jpg?im=FeatureCrop,algorithm=cascade,width=620,height=350",
-      date: "March 15, 2024",
+      date: "March 15, 2025",
       readTime: "5 min read"
     },
     {
       title: "Traditional Recipes Meet Modern Cooking",
       description: "Exploring the fusion of traditional Indian cooking techniques with contemporary culinary trends.",
       image: "https://images.stockcake.com/public/2/0/0/200d7fbe-14e7-442b-bc7f-36f7d448f44b_large/traditional-indian-cooking-stockcake.jpg",
-      date: "March 10, 2024",
+      date: "March 10, 2025",
       readTime: "4 min read"
     },
     {
       title: "The Art of Indian Home Dining",
       description: "How professional chefs are bringing restaurant-quality experiences to Indian homes.",
       image: "https://m.media-amazon.com/images/I/51-w8mhrRsL._SY445_SX342_.jpg",
-      date: "March 5, 2024",
+      date: "March 5, 2025",
       readTime: "6 min read"
     }
   ];

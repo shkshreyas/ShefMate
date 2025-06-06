@@ -10,6 +10,13 @@ import { MobileTabBar } from './components/ui/mobile-tab-bar';
 import { Header } from './components/ui/header';
 import './App.css';
 import { BlogsTestimonials } from '@/components/blocks/blogs-testimonials';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsOfServicePage } from './pages/TermsOfServicePage';
+import { HelpCenterPage } from './pages/HelpCenterPage';
+import { ContactPage } from './pages/ContactPage';
+import { AboutPage } from './pages/AboutPage';
+import { ServicesPage } from './pages/ServicesPage';
+import { CookiePolicyPage } from '@/pages/CookiePolicyPage';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -140,6 +147,13 @@ function App() {
       <Routes>
         <Route path="/" element={<AppContent />} />
         <Route path="/chefs" element={<ChefListingWithHeader />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/help" element={<HelpCenterPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
       </Routes>
     </Router>
   );

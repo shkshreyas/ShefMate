@@ -52,10 +52,10 @@ export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
         <div className="mb-8">
           <h4 className="text-lg font-bold mb-3">Quick Links</h4>
           <ul className="space-y-3">
-            <li><a href="#" className="block py-2 border-b border-border">Home</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">About Us</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">Our Chefs</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">Services</a></li>
+            <li><a href="/" className="block py-2 border-b border-border">Home</a></li>
+            <li><a href="/about" className="block py-2 border-b border-border">About Us</a></li>
+            <li><a href="/chefs" className="block py-2 border-b border-border">Our Chefs</a></li>
+            <li><a href="/services" className="block py-2 border-b border-border">Services</a></li>
           </ul>
         </div>
         
@@ -63,10 +63,10 @@ export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
         <div className="mb-8">
           <h4 className="text-lg font-bold mb-3">Support</h4>
           <ul className="space-y-3">
-            <li><a href="#" className="block py-2 border-b border-border">Help Center</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">Contact Us</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">Privacy Policy</a></li>
-            <li><a href="#" className="block py-2 border-b border-border">Terms of Service</a></li>
+            <li><a href="/help" className="block py-2 border-b border-border">Help Center</a></li>
+            <li><a href="/contact" className="block py-2 border-b border-border">Contact Us</a></li>
+            <li><a href="/privacy-policy" className="block py-2 border-b border-border">Privacy Policy</a></li>
+            <li><a href="/terms-of-service" className="block py-2 border-b border-border">Terms of Service</a></li>
           </ul>
         </div>
         
@@ -108,9 +108,9 @@ export function MoreMenu({ isOpen, onClose }: MoreMenuProps) {
         <div className="mt-8 pt-4 border-t">
           <p className="text-xs text-muted-foreground mb-4">&copy; 2025 ShefMate Ltd. All rights reserved.</p>
           <div className="flex flex-wrap gap-4 text-xs">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Cookie Policy</a>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms-of-service">Terms of Service</a>
+            <a href="/cookie-policy">Cookie Policy</a>
           </div>
         </div>
       </div>

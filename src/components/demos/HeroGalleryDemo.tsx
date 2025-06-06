@@ -113,20 +113,20 @@ export const HeroDemo1 = () => {
                 <div>
                   <h4 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold">Quick Links</h4>
                   <ul className="space-y-1 sm:space-y-2 footer-links">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Our Chefs</a></li>
-                    <li><a href="#">Services</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/chefs">Our Chefs</a></li>
+                    <li><a href="/services">Services</a></li>
                   </ul>
                 </div>
                 
                 <div>
                   <h4 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold">Support</h4>
                   <ul className="space-y-1 sm:space-y-2 footer-links">
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
+                    <li><a href="/terms-of-service">Terms of Service</a></li>
                   </ul>
                 </div>
                 
@@ -160,9 +160,9 @@ export const HeroDemo1 = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-center">
                   <p className="text-xs sm:text-sm text-muted-foreground">&copy; 2025 ShefMate Ltd. All rights reserved.</p>
                   <div className="flex mt-4 sm:mt-0 space-x-4 sm:space-x-6 footer-links text-xs sm:text-sm">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
+                    <a href="/privacy-policy">Privacy Policy</a>
+                    <a href="/terms-of-service">Terms of Service</a>
+                    <a href="/cookie-policy">Cookie Policy</a>
                   </div>
                 </div>
               </div>

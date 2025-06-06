@@ -2,6 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef } from 'react';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import './header.css';
 
 function InteractiveLogo() {
@@ -123,13 +131,79 @@ export function Header() {
           <InteractiveLogo />
         </div>
         
-        {/* Mobile view - only show UserButton centered */}
-        <div className="flex md:hidden justify-center items-center">
-          <UserButton afterSignOutUrl="/" />
-        </div>
-        
-        {/* Desktop view - show all buttons */}
-        <div className="hidden md:flex flex-wrap justify-center items-center gap-4">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-6">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>About</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid gap-3 p-4 w-[200px]">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <a
+                          href="/about"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">About Us</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Learn more about our mission and values
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <a
+                          href="/services"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">Services</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Explore our range of culinary services
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Support</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid gap-3 p-4 w-[200px]">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <a
+                          href="/help"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">Help Center</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Get help and find answers to your questions
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <a
+                          href="/contact"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">Contact Us</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Get in touch with our team
+                          </p>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
           <Button
             variant="outline"
             onClick={handleBookChef}
@@ -153,6 +227,11 @@ export function Header() {
               Register as Shef
             </Button>
           )}
+          <UserButton afterSignOutUrl="/" />
+        </div>
+        
+        {/* Mobile view - only show UserButton centered */}
+        <div className="flex md:hidden justify-center items-center">
           <UserButton afterSignOutUrl="/" />
         </div>
       </div>
