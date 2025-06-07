@@ -72,7 +72,7 @@ export function AboutPage() {
                 className="w-32 h-32 mx-auto mb-4 rounded-full object-cover border-2 border-primary"
               />
               <h3 className="text-xl font-semibold">Shreyas Kumar</h3>
-              <p className="text-muted-foreground">Co-Founder & CEO</p>
+              <p className="text-muted-foreground">Co-Founder & CTO</p>
             </div>
             <div className="text-center">
               <img 
