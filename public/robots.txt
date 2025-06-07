@@ -5,10 +5,21 @@ Allow: /
 # Sitemap location
 Sitemap: https://shefmate.com/sitemap.xml
 
-# Disallow admin and private routes
+# Disallow admin and private areas
 Disallow: /admin/
 Disallow: /private/
 Disallow: /api/
+Disallow: /dashboard/
+
+# Allow specific important pages
+Allow: /help
+Allow: /about
+Allow: /services
+Allow: /chefs
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /cookie-policy
 
 # Crawl-delay for all bots
 Crawl-delay: 10 
