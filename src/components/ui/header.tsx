@@ -123,6 +123,10 @@ export function Header() {
     navigate('/chefs');
   };
 
+  const handleLearn = () => {
+    navigate('/learn');
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -211,22 +215,34 @@ export function Header() {
           >
             Book a Shef
           </Button>
+
           <Button
             variant="outline"
-            onClick={handleOpenPricing}
+            onClick={handleLearn}
             className="font-medium text-base px-4"
           >
-            View Plans
+            Learn
           </Button>
+
           {user && (
-            <Button
-              variant="outline"
-              onClick={handleOpenChefRegistration}
-              className="font-medium text-base px-4"
-            >
-              Register as Shef
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={handleOpenChefRegistration}
+                className="font-medium text-base px-4"
+              >
+                Register as Shef
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleOpenPricing}
+                className="font-medium text-base px-4"
+              >
+                View Plans
+              </Button>
+            </>
           )}
+
           {isLoaded && (
             <>
               {user ? (

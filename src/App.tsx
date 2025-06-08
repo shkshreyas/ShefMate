@@ -18,6 +18,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { CookiePolicyPage } from '@/pages/CookiePolicyPage';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { LearnPage } from './pages/LearnPage';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -161,6 +162,7 @@ function App() {
       <Routes>
         <Route path="/" element={<AppContent />} />
         <Route path="/chefs" element={<ProtectedChefListing />} />
+        <Route path="/learn" element={<LearnPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/help" element={<HelpCenterPage />} />

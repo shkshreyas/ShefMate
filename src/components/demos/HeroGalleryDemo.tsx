@@ -99,7 +99,7 @@ export const HeroDemo1 = () => {
         <div className="h-[100vh] relative">
           <motion.footer 
             style={{ opacity: footerOpacity }}
-            className={`${showFooter ? 'fixed' : 'absolute -bottom-full'} bottom-0 left-0 right-0 w-full bg-background pt-8 sm:pt-16 pb-6 sm:pb-8 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] z-10 transition-all duration-500`}
+            className={`${showFooter ? 'fixed' : 'absolute -bottom-full'} bottom-0 left-0 right-0 w-full bg-background pt-8 sm:pt-16 pb-6 sm:pb-8 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] z-10 transition-all duration-500 hidden md:block`}
           >
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
