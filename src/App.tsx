@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PricingPage } from './components/pricing/PricingPage';
 import { ChefListingPage } from './components/chef/ChefListingPage';
 import { ChefRegistrationForm } from './components/chef/ChefRegistrationForm';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { MobileTabBar } from './components/ui/mobile-tab-bar';
 import { Header } from './components/ui/header';
 import './App.css';
@@ -17,6 +17,7 @@ import { ContactPage } from './pages/ContactPage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { CookiePolicyPage } from '@/pages/CookiePolicyPage';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -141,12 +142,25 @@ function ChefListingWithHeader() {
   );
 }
 
+function ProtectedChefListing() {
+  return (
+    <>
+      <SignedIn>
+        <ChefListingWithHeader />
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<AppContent />} />
-        <Route path="/chefs" element={<ChefListingWithHeader />} />
+        <Route path="/chefs" element={<ProtectedChefListing />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
         <Route path="/help" element={<HelpCenterPage />} />
@@ -154,6 +168,8 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        {/* Redirect any unknown routes to the dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

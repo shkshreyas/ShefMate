@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { UserButton, useUser } from '@clerk/clerk-react';
+import { UserButton, useUser, SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef } from 'react';
 import {
@@ -108,7 +108,7 @@ function InteractiveLogo() {
 }
 
 export function Header() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const navigate = useNavigate();
 
   const handleOpenPricing = () => {
@@ -227,12 +227,68 @@ export function Header() {
               Register as Shef
             </Button>
           )}
-          <UserButton afterSignOutUrl="/" />
+          {isLoaded && (
+            <>
+              {user ? (
+                <UserButton afterSignOutUrl="/" />
+              ) : (
+                <div className="flex items-center gap-3">
+                  <SignInButton mode="modal">
+                    <Button 
+                      variant="ghost" 
+                      className="font-medium text-base px-4 text-orange-500 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                    >
+                      Sign In
+                    </Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button 
+                      className="font-medium text-base px-6 relative overflow-hidden group bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <span className="relative z-10">
+                        Sign Up
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                  </SignUpButton>
+                </div>
+              )}
+            </>
+          )}
         </div>
         
-        {/* Mobile view - only show UserButton centered */}
+        {/* Mobile view - show UserButton when logged in, or Sign In/Up buttons when not */}
         <div className="flex md:hidden justify-center items-center">
-          <UserButton afterSignOutUrl="/" />
+          {isLoaded && (
+            <>
+              {user ? (
+                <UserButton afterSignOutUrl="/" />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <SignInButton mode="modal">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="font-medium text-orange-500 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                    >
+                      Sign In
+                    </Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button 
+                      size="sm"
+                      className="font-medium relative overflow-hidden group bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <span className="relative z-10">
+                        Sign Up
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                  </SignUpButton>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </header>
