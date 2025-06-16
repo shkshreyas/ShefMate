@@ -236,6 +236,23 @@ export function ChefListingPage() {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-serif font-bold text-primary mb-8">Find Your Perfect Chef</h1>
 
+        {/* Free Trial Registration Button */}
+        <div className="mb-8">
+          <Button 
+            asChild
+            className="w-full md:w-auto"
+            variant="default"
+          >
+            <a 
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfqfKq1QZPHX-icaNLKGQl2PS2JVSrdgAhMV-aLZF-mMSUVgQ/viewform" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              👉 ShefMate Free Trial Registration
+            </a>
+          </Button>
+        </div>
+
         {/* Filters */}
         <div className="space-y-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

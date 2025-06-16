@@ -13,44 +13,17 @@ interface PricingPlan {
 
 const plans: PricingPlan[] = [
   {
-    id: "basic",
-    name: "Basic",
-    description: "Perfect for casual cooking enthusiasts",
-    price: 9.99,
-    features: [
-      "Access to 100+ recipes",
-      "Basic meal planning",
-      "Email support",
-      "1 shef consultation per month",
-    ],
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    description: "Our most popular plan for food lovers",
+    id: "free",
+    name: "Free Trial",
+    description: "Experience our service with a free trial",
     price: 0,
     popular: true,
     features: [
-      "Access to 500+ recipes",
-      "Advanced meal planning",
-      "Priority email & chat support",
-      "2 Shef consultations per month",
-      "Custom weekly menu suggestions",
-    ],
-  },
-  {
-    id: "professional",
-    name: "Professional",
-    description: "For serious cooks and food professionals",
-    price: 49.99,
-    features: [
-      "Access to all recipes & premium content",
-      "Comprehensive meal planning",
-      "24/7 priority support",
-      "4 shef consultations per month",
-      "Custom weekly menu suggestions",
-      "Private cooking classes",
-      "Ingredient delivery service",
+      "Access to all chefs",
+      "Book any chef of your choice",
+      "Flexible scheduling",
+      "Direct communication with chefs",
+      "Secure payment system",
     ],
   },
 ];
@@ -59,19 +32,7 @@ export function PricingTable() {
   const { userId } = useAuth();
 
   const handleSubscribe = async (planId: string) => {
-    if (!userId) {
-      // Handle case where user is not logged in
-      return;
-    }
-    
-    // This is where you would integrate with Clerk's billing API
-    // For demonstration purposes, we're just logging the plan ID
-    console.log(`Subscribing to plan: ${planId}`);
-    
-    // In a real implementation, you would:
-    // 1. Call your backend API to create a subscription
-    // 2. The backend would use Clerk's API to create a subscription for the user
-    // 3. Redirect the user to the checkout page or show a success message
+    window.open('https://docs.google.com/forms/d/e/1FAIpQLSfqfKq1QZPHX-icaNLKGQl2PS2JVSrdgAhMV-aLZF-mMSUVgQ/viewform', '_blank');
   };
 
   return (
@@ -79,14 +40,14 @@ export function PricingTable() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl sm:text-3xl md:text-5xl font-serif font-bold tracking-tight text-primary">
-            Simple, Transparent Pricing
+            Start Your Culinary Journey
           </h2>
           <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-8 text-muted-foreground">
-            Choose the perfect plan that suits your culinary journey.
+            Try our service for free and experience the joy of home-cooked meals.
           </p>
         </div>
         
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-1">
           {plans.map((plan) => (
             <div
               key={plan.id}
@@ -98,7 +59,7 @@ export function PricingTable() {
             >
               {plan.popular && (
                 <div className="absolute top-0 right-4 sm:right-6 -translate-y-1/2 rounded-full bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground">
-                  Most popular
+                  Free Trial
                 </div>
               )}
               <div className="p-2">
@@ -113,18 +74,24 @@ export function PricingTable() {
                   {plan.description}
                 </p>
                 <p className="mt-4 sm:mt-6 flex items-baseline gap-x-1">
-                  <span className="text-3xl sm:text-4xl font-bold tracking-tight">${plan.price}</span>
+                  <span className="text-3xl sm:text-4xl font-bold tracking-tight">₹{plan.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">/month</span>
                 </p>
                 <Button
+                  asChild
                   className={`mt-4 sm:mt-6 w-full ${
                     plan.popular
                       ? ""
                       : "bg-primary/80 hover:bg-primary"
                   }`}
-                  onClick={() => handleSubscribe(plan.id)}
                 >
-                  Subscribe
+                  <a 
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSfqfKq1QZPHX-icaNLKGQl2PS2JVSrdgAhMV-aLZF-mMSUVgQ/viewform"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Start Free Trial
+                  </a>
                 </Button>
               </div>
               

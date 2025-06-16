@@ -143,25 +143,12 @@ function ChefListingWithHeader() {
   );
 }
 
-function ProtectedChefListing() {
-  return (
-    <>
-      <SignedIn>
-        <ChefListingWithHeader />
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  );
-}
-
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<AppContent />} />
-        <Route path="/chefs" element={<ProtectedChefListing />} />
+        <Route path="/chefs" element={<ChefListingWithHeader />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
