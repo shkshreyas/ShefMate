@@ -17,7 +17,6 @@ import { ContactPage } from './pages/ContactPage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { CookiePolicyPage } from '@/pages/CookiePolicyPage';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import { LearnPage } from './pages/LearnPage';
 
 function AppContent() {

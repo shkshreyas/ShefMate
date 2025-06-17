@@ -462,22 +462,23 @@ export const LearnPage = () => {
       
       <main className="pt-16 sm:pt-20 md:pt-24 pb-16 sm:pb-20">
         {/* Stories Section */}
-        <div className="container mx-auto px-2 sm:px-4 mb-6 sm:mb-8">
-          <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="container mx-auto px-2 sm:px-4 mb-4 sm:mb-8">
+          <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2 sm:pb-4 scrollbar-hide">
             {shorts.map((short) => (
               <div 
                 key={short.id} 
                 className="flex flex-col items-center space-y-1 sm:space-y-2 cursor-pointer hover:scale-105 transition-transform flex-shrink-0"
                 onClick={() => handleVideoClick(short)}
               >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-primary p-1 relative">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-primary p-1 relative">
                   <img
                     src={short.thumbnail}
                     alt={short.title}
                     className="w-full h-full rounded-full object-cover"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/20 rounded-full opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                    <Play className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
                   </div>
                   {!short.isEmbeddable && (
                     <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -485,41 +486,42 @@ export const LearnPage = () => {
                     </div>
                   )}
                 </div>
-                <span className="text-xs sm:text-sm text-center line-clamp-2 w-16 sm:w-20">{short.title}</span>
+                <span className="text-xs sm:text-sm text-center line-clamp-1 w-14 sm:w-20">{short.title}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Video Shorts Section */}
-        <div className="container mx-auto px-2 sm:px-4 mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 px-2">Recommended Videos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="container mx-auto px-2 sm:px-4 mb-4 sm:mb-8">
+          <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 px-1 sm:px-2">Recommended Videos</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
             {videos.map((video) => (
               <div 
                 key={video.id} 
-                className="relative rounded-lg overflow-hidden group cursor-pointer"
+                className="relative rounded-lg overflow-hidden group cursor-pointer shadow-sm"
                 onClick={() => handleVideoClick(video)}
               >
                 <img
                   src={video.thumbnail}
                   alt={video.title}
-                  className="w-full h-40 sm:h-48 object-cover transition-transform group-hover:scale-105"
+                  className="w-full h-32 sm:h-48 object-cover transition-transform group-hover:scale-105"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Play className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
+                  <Play className="w-6 h-6 sm:w-12 sm:h-12 text-white" />
                 </div>
                 {!video.isEmbeddable && (
-                  <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                    <ExternalLink className="w-3 h-3" />
-                    External
+                  <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-yellow-500 text-white text-xs px-1 py-0.5 sm:px-2 sm:py-1 rounded flex items-center gap-1">
+                    <ExternalLink className="w-2 h-2 sm:w-3 sm:h-3" />
+                    <span className="hidden sm:inline">External</span>
                   </div>
                 )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 sm:p-4">
-                  <h3 className="text-white font-semibold line-clamp-2 text-sm sm:text-base">{video.title}</h3>
-                  <div className="flex items-center justify-between text-white/80 text-xs sm:text-sm mt-1">
-                    <span className="truncate max-w-[60%]">{video.channelTitle}</span>
-                    <span>{video.duration}</span>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 sm:p-4">
+                  <h3 className="text-white font-semibold line-clamp-1 sm:line-clamp-2 text-xs sm:text-base">{video.title}</h3>
+                  <div className="flex items-center justify-between text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1">
+                    <span className="truncate max-w-[60%] text-[10px] sm:text-xs">{video.channelTitle}</span>
+                    <span className="text-[10px] sm:text-xs">{video.duration}</span>
                   </div>
                 </div>
               </div>
@@ -529,28 +531,28 @@ export const LearnPage = () => {
 
         {/* Video Player Modal */}
         {selectedVideo && (
-          <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-2 sm:p-4">
+          <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-1 sm:p-4">
             <div className="bg-background rounded-lg w-full max-w-4xl relative">
               <button 
                 onClick={() => {
                   setSelectedVideo(null);
                   setVideoError(false);
                 }}
-                className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 bg-background rounded-full p-1.5 sm:p-2 shadow-lg z-[10000] hover:bg-muted transition-colors"
+                className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 bg-background rounded-full p-1 sm:p-2 shadow-lg z-[10000] hover:bg-muted transition-colors"
               >
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                <X className="w-4 h-4 sm:w-6 sm:h-6" />
               </button>
               <div className="relative pt-[56.25%]">
                 {renderVideoPlayer(selectedVideo)}
               </div>
-              <div className="p-3 sm:p-4">
-                <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">{selectedVideo.title}</h3>
+              <div className="p-2 sm:p-4">
+                <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">{selectedVideo.title}</h3>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm sm:text-base text-muted-foreground">{selectedVideo.channelTitle}</p>
+                  <p className="text-xs sm:text-base text-muted-foreground">{selectedVideo.channelTitle}</p>
                   {!selectedVideo.isEmbeddable && (
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" />
-                      External link required
+                    <span className="text-[10px] sm:text-xs bg-yellow-100 text-yellow-800 px-1 py-0.5 sm:px-2 sm:py-1 rounded flex items-center gap-1">
+                      <ExternalLink className="w-2 h-2 sm:w-3 sm:h-3" />
+                      <span className="hidden sm:inline">External link required</span>
                     </span>
                   )}
                 </div>
@@ -561,13 +563,13 @@ export const LearnPage = () => {
 
         {/* AI Chatbot Section */}
         <div className="container mx-auto px-2 sm:px-4">
-          <div className="bg-card rounded-lg shadow-lg p-3 sm:p-4">
-            <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              <h2 className="text-lg sm:text-xl font-bold">Cooking Assistant</h2>
+          <div className="bg-card rounded-lg shadow-lg p-2 sm:p-4">
+            <div className="flex items-center space-x-2 mb-2 sm:mb-4">
+              <MessageCircle className="w-4 h-4 sm:w-6 sm:h-6 text-primary" />
+              <h2 className="text-base sm:text-xl font-bold">Cooking Assistant</h2>
             </div>
             
-            <div className="h-72 sm:h-96 overflow-y-auto mb-3 sm:mb-4 space-y-3 sm:space-y-4">
+            <div className="h-60 sm:h-96 overflow-y-auto mb-2 sm:mb-4 space-y-2 sm:space-y-4 px-1 sm:px-0">
               <AnimatePresence>
                 {chatMessages.map((msg, index) => (
                   <motion.div
@@ -579,7 +581,7 @@ export const LearnPage = () => {
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-2 sm:p-3 text-sm sm:text-base ${
+                      className={`max-w-[90%] sm:max-w-[80%] rounded-lg p-2 sm:p-3 text-xs sm:text-base ${
                         msg.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
@@ -596,13 +598,13 @@ export const LearnPage = () => {
               <Input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask about cooking tips, recipes, or techniques..."
-                className="flex-1 text-sm sm:text-base"
+                placeholder="Ask about cooking..."
+                className="flex-1 text-xs sm:text-base"
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 disabled={isLoading}
               />
               <Button onClick={handleSendMessage} disabled={isLoading} size="icon" className="flex-shrink-0">
-                <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Send className="w-3 h-3 sm:w-5 sm:h-5" />
               </Button>
             </div>
           </div>

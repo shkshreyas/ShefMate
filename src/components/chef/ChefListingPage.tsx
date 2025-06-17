@@ -6,9 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone, MapPin, Clock } from 'lucide-react';
+import { Phone, MapPin, Clock, Star, Award, ChefHat, Users } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  getRandomChefProfile, 
+  getRandomCuisine, 
+  getRandomChefQuote, 
+  getRandomSpecialties,
+  getRandomRating,
+  getRandomServingCapacity,
+  getRandomPriceRange
+} from '@/lib/api-utils';
 
 type SortOption = 'experience_asc' | 'experience_desc' | 'price_asc' | 'price_desc';
 
@@ -17,9 +26,18 @@ interface ChefWithRelations extends ChefWithDetails {
   services: ChefService[];
 }
 
+interface EnhancedChef extends ChefWithRelations {
+  image?: string;
+  quote?: string;
+  specialties?: string[];
+  rating?: string;
+  reviews?: number;
+  servingCapacity?: number;
+}
+
 export function ChefListingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [chefs, setChefs] = useState<ChefWithRelations[]>([]);
+  const [chefs, setChefs] = useState<EnhancedChef[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [locations, setLocations] = useState<string[]>([]);
@@ -88,8 +106,35 @@ export function ChefListingPage() {
 
       console.log('Combined chefs data:', chefsWithDetails);
 
+      // Enhance chef data with API data
+      const enhancedChefs = await Promise.all(chefsWithDetails.map(async (chef) => {
+        const profile = await getRandomChefProfile();
+        const cuisine = await getRandomCuisine();
+        const quote = await getRandomChefQuote();
+        const specialties = await getRandomSpecialties();
+        const { rating, reviews } = getRandomRating();
+        const servingCapacity = getRandomServingCapacity();
+
+        // Update services with random price ranges
+        const enhancedServices = chef.services.map(service => ({
+          ...service,
+          price_range: getRandomPriceRange()
+        }));
+
+        return {
+          ...chef,
+          image: profile?.image,
+          quote: quote,
+          specialties: specialties,
+          rating: rating,
+          reviews: reviews,
+          servingCapacity: servingCapacity,
+          services: enhancedServices
+        };
+      }));
+
       // Apply filters
-      let filteredChefs = chefsWithDetails;
+      let filteredChefs = enhancedChefs;
 
       if (location && location !== 'all') {
         filteredChefs = filteredChefs.filter(chef =>
@@ -207,6 +252,12 @@ export function ChefListingPage() {
       newParams.delete(key);
     }
     setSearchParams(newParams);
+  };
+
+  // Add function to format price in rupees
+  const formatPrice = (price: string) => {
+    const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
+    return `₹${numericPrice.toLocaleString('en-IN')}`;
   };
 
   if (error) {
@@ -341,10 +392,34 @@ export function ChefListingPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {chefs.map((chef) => (
-              <Card key={chef.id} className="flex flex-col">
-                <CardHeader>
-                  <CardTitle>{chef.name}</CardTitle>
-                  <CardDescription>{chef.bio}</CardDescription>
+              <Card key={chef.id} className="flex flex-col hover:shadow-lg transition-shadow duration-200">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      {chef.image && (
+                        <img 
+                          src={chef.image} 
+                          alt={chef.name}
+                          className="w-16 h-16 rounded-full object-cover"
+                        />
+                      )}
+                      <div>
+                        <CardTitle className="text-xl">{chef.name}</CardTitle>
+                        <div className="flex items-center gap-1 mt-1">
+                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                          <span className="text-sm font-medium">{chef.rating}</span>
+                          <span className="text-sm text-muted-foreground">({chef.reviews} reviews)</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded">
+                      <ChefHat className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">Verified Chef</span>
+                    </div>
+                  </div>
+                  <CardDescription className="mt-2 line-clamp-2">
+                    {chef.quote || chef.bio}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <div className="space-y-4">
@@ -357,6 +432,14 @@ export function ChefListingPage() {
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm">{chef.experience_years} years experience</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Award className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Specializes in {chef.specialties?.join(', ') || 'Multiple Cuisines'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Serves up to {chef.servingCapacity} people</span>
                     </div>
                     <div className="space-y-2">
                       <h4 className="font-medium">Services:</h4>
