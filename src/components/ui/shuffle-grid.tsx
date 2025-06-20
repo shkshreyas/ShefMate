@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from '@/components/ui/button';
 
 type ShuffleHeroProps = {
   onBookClick?: () => void;
@@ -12,11 +13,8 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
   const navigate = useNavigate();
   
   const handleBookClick = () => {
-    if (onBookClick) {
-      onBookClick();
-    } else {
-      navigate('/chef');
-    }
+    // Open the chef registration dialog (same as header)
+    window.dispatchEvent(new CustomEvent('open-chef-registration'));
   };
   
   return (
@@ -33,12 +31,9 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
           Let professional shefs bring restaurant-quality dining to your home.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button 
-            onClick={handleBookClick}
-            className="bg-primary text-primary-foreground font-medium py-2 px-4 rounded-md transition-all hover:bg-primary/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 relative z-10 cursor-pointer"
-          >
-            Book a Shef
-          </button>
+          <Button onClick={handleBookClick} className="z-10 font-medium text-base px-4">
+            Register as chef
+          </Button>
           <a 
             href="tel:6202372739"
             className="relative inline-flex items-center justify-center font-medium py-2 px-4 rounded-md transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer overflow-hidden group z-10"
