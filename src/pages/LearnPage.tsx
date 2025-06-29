@@ -457,24 +457,24 @@ export const LearnPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header />
       
       <main className="pt-16 sm:pt-20 md:pt-24 pb-20 sm:pb-24 min-h-screen w-full bg-background overflow-x-hidden">
         {/* Stories Section */}
-        <div className="container mx-auto px-2 sm:px-4 mb-4 sm:mb-8">
-          <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2 sm:pb-4 scrollbar-hide snap-x snap-mandatory min-w-0">
+        <div className="w-full mx-2 sm:mx-4 mb-4 sm:mb-8 overflow-x-hidden min-w-0">
+          <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2 sm:pb-4 scrollbar-hide snap-x snap-mandatory min-w-0 max-w-full">
             {shorts.map((short) => (
               <div 
                 key={short.id} 
-                className="flex flex-col items-center space-y-1 sm:space-y-2 cursor-pointer hover:scale-105 transition-transform flex-shrink-0 snap-start min-w-0"
+                className="flex flex-col items-center space-y-1 sm:space-y-2 cursor-pointer hover:scale-105 transition-transform flex-shrink-0 snap-start min-w-0 max-w-full"
                 onClick={() => handleVideoClick(short)}
               >
-                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-primary p-1 relative group min-w-0 overflow-hidden">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-primary p-1 relative group min-w-0 max-w-full overflow-hidden">
                   <img
                     src={short.thumbnail || 'https://placehold.co/80x80?text=No+Image'}
                     alt={short.title || 'Short'}
-                    className="w-full h-full rounded-full object-cover min-w-0"
+                    className="w-full h-full rounded-full object-cover min-w-0 max-w-full"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -486,30 +486,30 @@ export const LearnPage = () => {
                     </div>
                   )}
                 </div>
-                <span className="text-xs sm:text-sm text-center line-clamp-1 w-14 sm:w-20 min-w-0">{short.title || 'Untitled'}</span>
+                <span className="text-xs sm:text-sm text-center line-clamp-1 w-14 sm:w-20 min-w-0 max-w-full">{short.title || 'Untitled'}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Video Shorts Section */}
-        <div className="container mx-auto px-2 sm:px-4 mb-4 sm:mb-8">
+        <div className="w-full mx-2 sm:mx-4 mb-4 sm:mb-8 overflow-x-hidden min-w-0">
           <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 px-1 sm:px-2">Recommended Videos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 min-w-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 min-w-0 max-w-full">
             {videos.map((video) => (
               <div 
                 key={video.id} 
-                className="relative rounded-lg overflow-hidden group cursor-pointer shadow-sm min-w-0"
+                className="relative rounded-lg overflow-hidden group cursor-pointer shadow-sm min-w-0 max-w-full"
                 onClick={() => handleVideoClick(video)}
               >
                 <img
                   src={video.thumbnail || 'https://placehold.co/320x180?text=No+Image'}
                   alt={video.title || 'Video'}
-                  className="w-full h-32 sm:h-48 object-cover transition-transform group-hover:scale-105 min-w-0"
+                  className="w-full h-32 sm:h-48 object-cover transition-transform group-hover:scale-105 min-w-0 max-w-full"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/40 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Play className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
+                <div className="absolute inset-0 bg-black/40 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center justify-center max-w-full max-h-full">
+                  <Play className="w-8 h-8 sm:w-12 sm:h-12 text-white max-w-full max-h-full" />
                 </div>
                 {!video.isEmbeddable && (
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-yellow-500 text-white text-xs px-1 py-0.5 sm:px-2 sm:py-1 rounded flex items-center gap-1">
@@ -517,10 +517,10 @@ export const LearnPage = () => {
                     <span className="hidden sm:inline">External</span>
                   </div>
                 )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 sm:p-4 min-w-0">
-                  <h3 className="text-white font-semibold line-clamp-2 text-xs sm:text-base min-w-0">{video.title || 'Untitled'}</h3>
-                  <div className="flex items-center justify-between text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 min-w-0">
-                    <span className="truncate max-w-[60%] text-[10px] sm:text-xs min-w-0">{video.channelTitle || 'Unknown'}</span>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 sm:p-4 min-w-0 max-w-full">
+                  <h3 className="text-white font-semibold line-clamp-2 text-xs sm:text-base min-w-0 max-w-full">{video.title || 'Untitled'}</h3>
+                  <div className="flex items-center justify-between text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 min-w-0 max-w-full">
+                    <span className="truncate max-w-[60%] text-[10px] sm:text-xs min-w-0 max-w-full">{video.channelTitle || 'Unknown'}</span>
                     <span className="text-[10px] sm:text-xs">{video.duration || '--:--'}</span>
                   </div>
                 </div>
@@ -531,8 +531,8 @@ export const LearnPage = () => {
 
         {/* Video Player Modal */}
         {selectedVideo && (
-          <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-1 sm:p-4 overflow-y-auto max-h-screen">
-            <div className="bg-background rounded-lg w-full max-w-4xl relative mx-1 sm:mx-0 max-h-[90vh] flex flex-col">
+          <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-0 xs:p-1 sm:p-4 overflow-y-auto max-h-screen">
+            <div className="bg-background rounded-none xs:rounded-lg w-full max-w-4xl relative mx-0 xs:mx-1 sm:mx-0 max-h-screen xs:max-h-[95vh] sm:max-h-[90vh] flex flex-col">
               <button 
                 onClick={() => {
                   setSelectedVideo(null);

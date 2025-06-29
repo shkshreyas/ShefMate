@@ -117,8 +117,8 @@ export function PrivacyPolicyPage() {
           <div className="mt-4 space-y-2">
             <p>
               <strong>Email:</strong>{' '}
-              <a href="mailto:shkshreyaskumar@gmail.com" className="text-primary hover:underline">
-                shkshreyaskumar@gmail.com
+              <a href="mailto:contact@shefmate.com" className="text-primary hover:underline">
+                contact@shefmate.com
               </a>
             </p>
             <p>

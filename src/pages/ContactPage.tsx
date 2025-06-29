@@ -69,10 +69,10 @@ export function ContactPage() {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Email</h3>
                 <a 
-                  href="mailto:shkshreyaskumar@gmail.com"
+                  href="mailto:contact@shefmate.com"
                   className="text-primary hover:underline"
                 >
-                  shkshreyaskumar@gmail.com
+                  contact@shefmate.com
                 </a>
               </div>
               <div>
@@ -82,6 +82,12 @@ export function ContactPage() {
                   className="text-primary hover:underline"
                 >
                   +91 6202372739
+                </a>
+                <a 
+                  href="tel:+917394842782"
+                  className="text-primary hover:underline"
+                >
+                  +91 7394842782
                 </a>
               </div>
               <div>

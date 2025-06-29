@@ -87,10 +87,10 @@ export function HelpCenterPage() {
               <p>
                 Send us an email at{" "}
                 <a
-                  href="mailto:shkshreyaskumar@gmail.com"
+                  href="mailto:contact@shefmate.com"
                   className="text-primary hover:underline"
                 >
-                  shkshreyaskumar@gmail.com
+                  contact@shefmate.com
                 </a>
               </p>
             </div>

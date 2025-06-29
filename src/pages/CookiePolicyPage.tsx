@@ -106,7 +106,7 @@ export function CookiePolicyPage() {
             If you have any questions about our use of cookies or other technologies, please contact us at:
           </p>
           <p className="text-muted-foreground">
-            Email: <a href="mailto:shkshreyaskumar@gmail.com" className="text-primary hover:underline">shkshreyaskumar@gmail.com</a>
+            Email: <a href="mailto:contact@shefmate.com" className="text-primary hover:underline">contact@shefmate.com</a>
           </p>
         </section>
       </div>
