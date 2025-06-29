@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useUser } from '@clerk/clerk-react';
+import { nanoid } from 'nanoid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -82,43 +83,32 @@ export function ChefRegistrationForm() {
   };
 
   const onSubmit = async (data: ChefFormData) => {
-    if (!user) {
-      toast({
-        title: 'Error',
-        description: 'You must be logged in to create a Shef profile.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
     setIsLoading(true);
     try {
-      console.log('Starting chef registration with data:', {
-        user_id: user.id,
-        name: data.name,
-        email: user.primaryEmailAddress?.emailAddress,
-        phone_number: data.phone_number,
-        bio: data.bio,
-        experience_years: data.experience_years
-      });
+      // Use user id if logged in, else random
+      const userId = user?.id || nanoid();
+      // Use email if available, else random
+      const email = user?.primaryEmailAddress?.emailAddress || `anon_${nanoid()}@anon.com`;
 
-      // First check if user already has a chef profile
-      const { data: existingChef, error: checkError } = await supabase
-        .from('chefs')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking existing chef:', checkError);
-        toast({
-          title: 'Error',
-          description: 'Failed to check existing profile. Please try again.',
-          variant: 'destructive',
-        });
-        return;
+      // Optionally skip duplicate check if not logged in
+      let existingChef = null;
+      if (user) {
+        const { data: existing, error: checkError } = await supabase
+          .from('chefs')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (checkError) {
+          console.error('Error checking existing chef:', checkError);
+          toast({
+            title: 'Error',
+            description: 'Failed to check existing profile. Please try again.',
+            variant: 'destructive',
+          });
+          return;
+        }
+        existingChef = existing;
       }
-
       if (existingChef) {
         toast({
           title: 'Error',
@@ -132,9 +122,9 @@ export function ChefRegistrationForm() {
       const { data: chef, error: chefError } = await supabase
         .from('chefs')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           name: data.name,
-          email: user.primaryEmailAddress?.emailAddress,
+          email,
           phone_number: data.phone_number,
           bio: data.bio,
           experience_years: data.experience_years
@@ -254,6 +244,14 @@ export function ChefRegistrationForm() {
               Fill out the form below to create your Shef profile and start accepting bookings.
             </DialogDescription>
           </DialogHeader>
+          <div className="mb-4">
+            <p className="text-sm mb-2">Alternatively, you can register using our Google Form:</p>
+            <Button asChild variant="outline" className="w-full mb-2">
+              <a href="https://forms.gle/rwxwNfFxUvPkSE2g7" target="_blank" rel="noopener noreferrer">
+                Register via Google Form
+              </a>
+            </Button>
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
               <div>
