@@ -39,7 +39,7 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
             className="relative inline-flex items-center justify-center font-medium py-2 px-4 rounded-md transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer overflow-hidden group z-10"
           >
             <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 group-hover:scale-110"></span>
-            <span className="relative text-white font-medium">Advanced Book</span>
+            <span className="relative text-white font-medium">Book Now</span>
           </a>
         </div>
       </div>

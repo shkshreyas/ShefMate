@@ -299,7 +299,7 @@ export function ChefListingPage() {
               target="_blank" 
               rel="noopener noreferrer"
             >
-              👉 ShefMate Free Trial Registration
+              👉 ShefMate Book Chef
             </a>
           </Button>
         </div>
