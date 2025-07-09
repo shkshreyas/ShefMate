@@ -19,6 +19,7 @@ import {
   DialogPortal,
   DialogOverlay,
 } from "@/components/ui/dialog";
+import { uploadImageToFreeImageHost } from '@/lib/uploadImage';
 
 const chefSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -29,7 +30,8 @@ const chefSchema = z.object({
   services: z.array(z.object({
     name: z.string(),
     price_range: z.string()
-  })).min(1, 'Please add at least one service')
+  })).min(1, 'Please add at least one service'),
+  profile_image: z.any().optional(), // Add image to schema
 });
 
 type ChefFormData = z.infer<typeof chefSchema>;
@@ -41,6 +43,7 @@ export function ChefRegistrationForm() {
   const { toast } = useToast();
   const [newLocation, setNewLocation] = useState('');
   const [newService, setNewService] = useState({ name: '', price_range: '' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const {
     register,
@@ -118,16 +121,38 @@ export function ChefRegistrationForm() {
         return;
       }
 
-      // Insert chef data
+      let imageUrl = null;
+      if (imageFile) {
+        imageUrl = await uploadImageToFreeImageHost(imageFile);
+        if (!imageUrl) {
+          toast({
+            title: 'Error',
+            description: 'Image upload failed. Please try again.',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
+      }
+      // 1. Upsert user into users table
+      await supabase.from('users').upsert({
+        id: userId,
+        name: user?.fullName || '',
+        email,
+      });
+
+      // 2. Insert chef data
       const { data: chef, error: chefError } = await supabase
         .from('chefs')
         .insert({
+          id: userId, // Set chef id to Clerk user ID
           user_id: userId,
           name: data.name,
           email,
           phone_number: data.phone_number,
           bio: data.bio,
-          experience_years: data.experience_years
+          experience_years: data.experience_years,
+          profile_image: imageUrl // Save image URL
         })
         .select('*')
         .single();
@@ -362,6 +387,14 @@ export function ChefRegistrationForm() {
                 )}
               </div>
             </div>
+
+            <label className="block mb-2 font-medium">Profile Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => setImageFile(e.target.files?.[0] || null)}
+              className="mb-4"
+            />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Creating Profile...' : 'Create Chef Profile'}

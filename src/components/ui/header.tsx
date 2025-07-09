@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { UserButton, useUser, SignInButton, SignUpButton } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,9 +11,11 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import './header.css';
+import { supabase } from '@/lib/supabase';
 
 function InteractiveLogo() {
   const logoRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const logoContainer = logoRef.current;
@@ -86,7 +88,7 @@ function InteractiveLogo() {
   }, []);
 
   return (
-    <div ref={logoRef} className="logo-container cursor-pointer transition-transform duration-300 hover:scale-105">
+    <div ref={logoRef} className="logo-container cursor-pointer transition-transform duration-300 hover:scale-105" onClick={() => navigate('/') }>
       <div className="cooking-steam">
         <div className="steam-line"></div>
         <div className="steam-line"></div>
@@ -109,7 +111,24 @@ function InteractiveLogo() {
 
 export function Header() {
   const { user, isLoaded } = useUser();
+  const [isChef, setIsChef] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function checkChef() {
+      if (user) {
+        const { data } = await supabase
+          .from('chefs')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+        setIsChef(!!data);
+      } else {
+        setIsChef(false);
+      }
+    }
+    checkChef();
+  }, [user]);
 
   const handleOpenPricing = () => {
     window.dispatchEvent(new CustomEvent('open-pricing'));
@@ -225,28 +244,31 @@ export function Header() {
           </Button>
 
           {user && (
-            <>
+            isChef ? (
               <Button
                 variant="outline"
-                onClick={handleOpenChefRegistration}
+                onClick={() => navigate('/dashboard/chef')}
+                className="font-medium text-base px-4"
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/become-chef')}
                 className="font-medium text-base px-4"
               >
                 Register as Shef
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleOpenPricing}
-                className="font-medium text-base px-4"
-              >
-                View Plans
-              </Button>
-            </>
+            )
           )}
 
           {isLoaded && (
             <>
               {user ? (
-                <UserButton afterSignOutUrl="/" />
+                <>
+                  <UserButton afterSignOutUrl="/" />
+                </>
               ) : (
                 <div className="flex items-center gap-3">
                   <SignInButton mode="modal">
@@ -275,10 +297,31 @@ export function Header() {
         
         {/* Mobile view - show UserButton when logged in, or Sign In/Up buttons when not */}
         <div className="flex md:hidden justify-center items-center">
+          {isLoaded && user && (
+            isChef ? (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/dashboard/chef')}
+                className="font-medium text-base px-4"
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/become-chef')}
+                className="font-medium text-base px-4"
+              >
+                Become a Chef
+              </Button>
+            )
+          )}
           {isLoaded && (
             <>
               {user ? (
-                <UserButton afterSignOutUrl="/" />
+                <>
+                  <UserButton afterSignOutUrl="/" />
+                </>
               ) : (
                 <div className="flex items-center gap-2">
                   <SignInButton mode="modal">

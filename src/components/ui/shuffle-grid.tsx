@@ -13,8 +13,7 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
   const navigate = useNavigate();
   
   const handleBookClick = () => {
-    // Open the chef registration dialog (same as header)
-    window.dispatchEvent(new CustomEvent('open-chef-registration'));
+    navigate('/become-chef');
   };
   
   return (

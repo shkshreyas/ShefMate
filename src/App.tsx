@@ -18,6 +18,8 @@ import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { CookiePolicyPage } from '@/pages/CookiePolicyPage';
 import { LearnPage } from './pages/LearnPage';
+import { ChefDetailPage, ChefDashboardPage, BecomeChefPage } from './pages';
+import CustomerOrdersPage from './pages/CustomerOrdersPage';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -148,6 +150,9 @@ function App() {
       <Routes>
         <Route path="/" element={<AppContent />} />
         <Route path="/chefs" element={<ChefListingWithHeader />} />
+        <Route path="/chefs/:id" element={<ChefDetailPage />} />
+        <Route path="/dashboard/chef" element={<ChefDashboardPage />} />
+        <Route path="/become-chef" element={<BecomeChefPage />} />
         <Route path="/learn" element={<LearnPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-of-service" element={<TermsOfServicePage />} />
@@ -156,6 +161,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+        <Route path="/orders" element={<CustomerOrdersPage />} />
         {/* Redirect any unknown routes to the dashboard */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
