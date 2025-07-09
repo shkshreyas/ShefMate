@@ -1,7 +1,7 @@
 import { useUser, useSignIn } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import icon from '/public/assets/icon.png';
 import imageCompression from 'browser-image-compression';
 import { uploadImageToFreeImageHost } from '@/lib/uploadImage';
@@ -146,43 +146,27 @@ export default function BecomeChefPage() {
     const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? '';
     
     try {
-      // Use Edge Function to bypass RLS
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/upsert-user`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({
+      // Use supabaseAdmin to bypass RLS
+      const { error: userUpsertError } = await supabaseAdmin
+        .from('users')
+        .upsert({
           id: userId,
-          name: userName,
-          email: userEmail
-        })
-      });
+          full_name: userName,
+          email: userEmail,
+          updated_at: new Date().toISOString()
+        });
       
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
-        const errorMessage = result.error || 'Failed to create user';
-        console.error('Failed to create user:', errorMessage);
-        setError('Failed to create user: ' + errorMessage);
+      if (userUpsertError) {
+        console.error('Failed to create user:', userUpsertError);
+        setError('Failed to create user: ' + userUpsertError.message);
         setLoading(false);
         return;
       }
     } catch (err) {
       console.error('Error upserting user:', err);
-      // Fallback to direct insert if Edge Function fails
-      const { error: directUpsertError } = await supabase.from('users').upsert({
-        id: userId,
-        name: userName,
-        email: userEmail,
-      });
-      
-      if (directUpsertError) {
-        setError('Failed to create user: ' + directUpsertError.message);
-        setLoading(false);
-        return;
-      }
+      setError('Failed to create user: ' + (err instanceof Error ? err.message : String(err)));
+      setLoading(false);
+      return;
     }
 
     // 2. Compress and upload profile image to Supabase Storage
