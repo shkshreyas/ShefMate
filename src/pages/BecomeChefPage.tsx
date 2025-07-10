@@ -1,10 +1,12 @@
 import { useUser, useSignIn } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
-import icon from '/public/assets/icon.png';
+import icon from '../assets/icon.png';
 import imageCompression from 'browser-image-compression';
-import { uploadImageToFreeImageHost } from '@/lib/uploadImage';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
+import { registerChef, addService, uploadImage } from '@/lib/firebase-utils';
 
 const QUOTES = [
   'Earn part-time with your passion!',
@@ -42,6 +44,8 @@ export default function BecomeChefPage() {
   const quoteTimeout = useRef<NodeJS.Timeout | null>(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [alreadyChef, setAlreadyChef] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -53,15 +57,17 @@ export default function BecomeChefPage() {
   useEffect(() => {
     async function checkIfChefExists() {
       if (isLoaded && user) {
-        const { data, error } = await supabase
-          .from('chefs')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-        if (data && data.id) {
+        // Check if chef document exists with this userId
+        const chefsQuery = query(
+          collection(db, "chefs"), 
+          where("userId", "==", user.id)
+        );
+        
+        const querySnapshot = await getDocs(chefsQuery);
+        if (!querySnapshot.empty) {
           setAlreadyChef(true);
           setTimeout(() => {
-            navigate('/dashboard/chef', { replace: true });
+            navigate('/chef-dashboard', { replace: true });
           }, 1500);
         }
       }
@@ -135,129 +141,155 @@ export default function BecomeChefPage() {
     );
   }
 
+  // Upload image directly to external service instead of Firebase Storage
+  async function uploadProfileImage(file: File): Promise<string> {
+    try {
+      // Compress image first
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      });
+      
+      // Use the utility function to upload to external service
+      const imageUrl = await uploadImage(compressedFile, ''); // Path parameter is ignored now
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // 1. Upsert user into users table
     const userId = user?.id ?? '';
     const userName = user?.fullName ?? user?.username ?? user?.emailAddresses?.[0]?.emailAddress ?? '';
     const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? '';
     
-    try {
-      // Use supabaseAdmin to bypass RLS
-      const { error: userUpsertError } = await supabaseAdmin
-        .from('users')
-        .upsert({
-          id: userId,
-          full_name: userName,
-          email: userEmail,
-          updated_at: new Date().toISOString()
-        });
-      
-      if (userUpsertError) {
-        console.error('Failed to create user:', userUpsertError);
-        setError('Failed to create user: ' + userUpsertError.message);
-        setLoading(false);
-        return;
-      }
-    } catch (err) {
-      console.error('Error upserting user:', err);
-      setError('Failed to create user: ' + (err instanceof Error ? err.message : String(err)));
-      setLoading(false);
-      return;
-    }
-
-    // 2. Compress and upload profile image to Supabase Storage
+    // Debug information
+    console.log('Form submission data:', {
+      userId,
+      userName,
+      userEmail,
+      bio,
+      location,
+      experience,
+      phoneNumber,
+      hasProfileImage: !!profileImage,
+      profileImageSize: profileImage ? Math.round(profileImage.size / 1024) + ' KB' : 'N/A'
+    });
+    
+    // Upload profile image if exists
     let imageUrl = null;
     if (profileImage) {
       try {
-        const compressedFile = await imageCompression(profileImage, {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-        });
-        imageUrl = await uploadImageToFreeImageHost(compressedFile);
+        setImageUploading(true);
+        setUploadProgress(10);
+        
+        // Upload the image using our new function
+        imageUrl = await uploadProfileImage(profileImage);
+        
+        setUploadProgress(100);
+        setImageUploading(false);
       } catch (err) {
+        console.error('Image upload error:', err);
         setError('Image upload failed. Please try again later.');
         setLoading(false);
+        setImageUploading(false);
         return;
       }
     }
 
-    // 3. Insert chef into chefs table
-    const chefName = user?.fullName || user?.username || user?.emailAddresses?.[0]?.emailAddress || '';
-    const chefEmail = user?.emailAddresses?.[0]?.emailAddress || '';
-    const { data: chefData, error: chefError } = await supabase
-      .from('chefs')
-      .insert([{
-        id: userId, // Set chef id to Clerk user ID
-        user_id: userId,
-        name: chefName,
-        email: chefEmail,
-        phone_number: phoneNumber,
+    // Register the chef in Firebase using the utility function
+    try {
+      const chefData = {
+        userId,
+        displayName: userName,
+        email: userEmail,
+        phoneNumber,
         bio,
         location,
-        experience_years: Number(experience),
-        profile_image_url: imageUrl,
-      }])
-      .select('id')
-      .single();
-
-    if (chefError) {
-      setError(chefError.message);
-      setLoading(false);
-      return;
+        experienceYears: Number(experience),
+        profileImage: imageUrl,
+      };
+      
+      const result = await registerChef(chefData);
+      
+      if (result.success) {
+        setChefId(result.id);
+        setShowServiceForm(true);
+        setStep(1);
+      } else {
+        throw new Error('Chef registration failed');
+      }
+    } catch (err) {
+      console.error('Error registering chef:', err);
+      setError('Failed to register as chef. Please try again later.');
     }
-
-    setChefId(chefData.id);
-    setShowServiceForm(true);
-    setStep(1);
+    
     setLoading(false);
   }
 
   async function handleAddService(e: React.FormEvent) {
     e.preventDefault();
     if (!chefId) return;
+    
     setLoading(true);
     setError(null);
-    const { data, error: serviceError } = await supabase
-      .from('services')
-      .insert([{
-        chef_id: chefId,
-        service_name: serviceName,
+    
+    try {
+      const serviceData = {
+        chefId,
+        serviceName,
         description: serviceDescription,
         price: Number(servicePrice),
-        is_active: true,
-      }])
-      .select('id, service_name, description, price')
-      .single();
-    if (serviceError) {
-      setError(serviceError.message);
-      setLoading(false);
-      return;
+      };
+      
+      const result = await addService(serviceData);
+      
+      if (result.success) {
+        setAddedServices(prev => [...prev, { 
+          id: result.id, 
+          serviceName, 
+          description: serviceDescription, 
+          price: Number(servicePrice) 
+        }]);
+        
+        setServiceName('');
+        setServiceDescription('');
+        setServicePrice('');
+      } else {
+        throw new Error('Failed to add service');
+      }
+    } catch (err) {
+      console.error('Error adding service:', err);
+      setError('Failed to add service. Please try again.');
     }
-    setAddedServices(prev => [...prev, data]);
-    setServiceName('');
-    setServiceDescription('');
-    setServicePrice('');
+    
     setLoading(false);
   }
 
   function handleRemoveService(id: string) {
     setAddedServices(prev => prev.filter(s => s.id !== id));
-    // Optionally, also remove from DB
-    supabase.from('services').delete().eq('id', id);
+    // We'll handle actual deletion in a separate function in production
   }
 
   function handleFinish() {
+    if (addedServices.length === 0) {
+      setError('Please add at least one service before continuing');
+      return;
+    }
+    
+    setError(null);
     setShowSummary(true);
     setStep(2);
   }
 
   function handleGoToDashboard() {
-    navigate('/dashboard/chef');
+    navigate('/chef-dashboard', { replace: true });
   }
 
   if (showSummary) {
@@ -269,7 +301,7 @@ export default function BecomeChefPage() {
         <ul className="mb-4">
           {addedServices.map(s => (
             <li key={s.id} className="mb-2 border-b pb-2">
-              <div className="font-semibold">{s.service_name}</div>
+              <div className="font-semibold">{s.serviceName}</div>
               <div className="text-sm text-gray-600">{s.description}</div>
               <div className="text-sm">Price: ₹{s.price}</div>
             </li>
@@ -290,34 +322,70 @@ export default function BecomeChefPage() {
         <h2 className="text-2xl font-bold mb-4">Add Your Services</h2>
         <form onSubmit={handleAddService} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
           <div>
-            <label className="block mb-1 font-medium">Service Name</label>
-            <input className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={serviceName} onChange={e => setServiceName(e.target.value)} required />
+            <label className="block mb-1 font-medium text-gray-700">Service Name</label>
+            <input 
+              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+              value={serviceName} 
+              onChange={e => setServiceName(e.target.value)} 
+              required 
+            />
           </div>
           <div>
-            <label className="block mb-1 font-medium">Description</label>
-            <textarea className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={serviceDescription} onChange={e => setServiceDescription(e.target.value)} required />
+            <label className="block mb-1 font-medium text-gray-700">Description</label>
+            <textarea 
+              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+              value={serviceDescription} 
+              onChange={e => setServiceDescription(e.target.value)} 
+              required 
+              rows={4}
+            />
           </div>
           <div>
-            <label className="block mb-1 font-medium">Price (₹)</label>
-            <input type="number" className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={servicePrice} onChange={e => setServicePrice(e.target.value)} required />
+            <label className="block mb-1 font-medium text-gray-700">Price (₹)</label>
+            <input 
+              type="number" 
+              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+              value={servicePrice} 
+              onChange={e => setServicePrice(e.target.value)} 
+              required 
+            />
           </div>
-          {error && <div className="text-red-600">{error}</div>}
+          {error && <div className="text-red-600 font-medium">{error}</div>}
           <div className="flex gap-2">
-            <button type="submit" className="px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/90 transition" disabled={loading}>
+            <button 
+              type="submit" 
+              className="px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/90 transition" 
+              disabled={loading}
+            >
               {loading ? 'Adding...' : 'Add Service'}
             </button>
-            <button type="button" className="px-4 py-2 bg-gray-300 rounded shadow" onClick={handleFinish}>
+            <button 
+              type="button" 
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded shadow hover:bg-gray-400 transition" 
+              onClick={handleFinish}
+            >
               Finish
             </button>
           </div>
         </form>
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-2">Added Services</h2>
-          <ul>
+          <ul className="bg-white rounded-lg shadow p-4">
+            {addedServices.length === 0 && (
+              <li className="text-gray-500 italic">No services added yet. Add at least one service to continue.</li>
+            )}
             {addedServices.map(s => (
-              <li key={s.id} className="mb-1 flex items-center justify-between">
-                <span><span className="font-medium">{s.service_name}</span> - ₹{s.price}</span>
-                <button className="ml-2 text-red-500 hover:underline text-xs" onClick={() => handleRemoveService(s.id)}>Remove</button>
+              <li key={s.id} className="mb-2 pb-2 border-b flex items-center justify-between">
+                <div>
+                  <span className="font-medium">{s.serviceName}</span> - ₹{s.price}
+                  <p className="text-sm text-gray-600">{s.description}</p>
+                </div>
+                <button 
+                  className="ml-2 text-red-500 hover:text-red-700 hover:underline text-sm" 
+                  onClick={() => handleRemoveService(s.id)}
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
@@ -332,36 +400,85 @@ export default function BecomeChefPage() {
       <Stepper />
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
         <div>
-          <label className="block mb-1 font-medium">Full Name</label>
-          <input className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={user.fullName || ''} disabled />
+          <label className="block mb-1 font-medium text-gray-700">Full Name</label>
+          <input 
+            className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-800" 
+            value={user.fullName || ''} 
+            disabled 
+          />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Bio</label>
-          <textarea className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={bio} onChange={e => setBio(e.target.value)} required />
+          <label className="block mb-1 font-medium text-gray-700">Bio</label>
+          <textarea 
+            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+            value={bio} 
+            onChange={e => setBio(e.target.value)} 
+            required 
+            rows={4}
+            placeholder="Tell us about yourself and your cooking style..."
+          />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Location</label>
-          <input className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={location} onChange={e => setLocation(e.target.value)} required />
+          <label className="block mb-1 font-medium text-gray-700">Location</label>
+          <input 
+            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+            value={location} 
+            onChange={e => setLocation(e.target.value)} 
+            required 
+            placeholder="City, State"
+          />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Experience (years)</label>
-          <input type="number" className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={experience} onChange={e => setExperience(e.target.value)} required />
+          <label className="block mb-1 font-medium text-gray-700">Experience (years)</label>
+          <input 
+            type="number" 
+            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+            value={experience} 
+            onChange={e => setExperience(e.target.value)} 
+            required 
+            min="0"
+            placeholder="Years of cooking experience"
+          />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Phone Number</label>
-          <input className="w-full border rounded px-2 py-1 text-white bg-gray-800" value={phoneNumber} onChange={e => setPhoneNumber(e.target.value)} required />
+          <label className="block mb-1 font-medium text-gray-700">Phone Number</label>
+          <input 
+            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
+            value={phoneNumber} 
+            onChange={e => setPhoneNumber(e.target.value)} 
+            required 
+            placeholder="Contact number"
+            type="tel"
+          />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Profile Image</label>
-          <input type="file" accept="image/*" onChange={e => setProfileImage(e.target.files?.[0] || null)} />
+          <label className="block mb-1 font-medium text-gray-700">Profile Image</label>
+          <input 
+            type="file" 
+            accept="image/*" 
+            onChange={e => setProfileImage(e.target.files?.[0] || null)} 
+            className="w-full border rounded px-3 py-2 bg-white text-gray-800"
+          />
+          {imageUploading && (
+            <div className="mt-2">
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-primary h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+              </div>
+              <p className="text-sm text-gray-600 mt-1">Uploading image... {uploadProgress}%</p>
+            </div>
+          )}
           {profileImageUrl && (
             <div className="mt-2 flex justify-center">
               <img src={profileImageUrl} alt="Preview" className="h-24 w-24 rounded-full object-cover border-2 border-primary shadow" />
             </div>
           )}
         </div>
-        {error && <div className="text-red-600">{error}</div>}
-        <button type="submit" className="px-4 py-2 bg-primary text-white rounded w-full shadow-lg hover:bg-primary/90 transition" disabled={loading}>
+        {error && <div className="text-red-600 font-medium">{error}</div>}
+        <button 
+          type="submit" 
+          className="px-4 py-2 bg-primary text-white rounded w-full shadow-lg hover:bg-primary/90 transition" 
+          disabled={loading}
+        >
           {loading ? 'Registering...' : 'Register as Chef'}
         </button>
       </form>

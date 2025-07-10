@@ -11,7 +11,8 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import './header.css';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 function InteractiveLogo() {
   const logoRef = useRef<HTMLDivElement>(null);
@@ -117,12 +118,16 @@ export function Header() {
   useEffect(() => {
     async function checkChef() {
       if (user) {
-        const { data } = await supabase
-          .from('chefs')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-        setIsChef(!!data);
+        const chefsRef = collection(db, "chefs");
+        const q = query(chefsRef, where("userId", "==", user.id));
+        
+        try {
+          const querySnapshot = await getDocs(q);
+          setIsChef(!querySnapshot.empty);
+        } catch (error) {
+          console.error("Error checking chef status:", error);
+          setIsChef(false);
+        }
       } else {
         setIsChef(false);
       }
@@ -144,6 +149,10 @@ export function Header() {
 
   const handleLearn = () => {
     navigate('/learn');
+  };
+  
+  const handleOrders = () => {
+    navigate('/orders');
   };
 
   return (
@@ -244,6 +253,16 @@ export function Header() {
           </Button>
 
           {user && (
+            <Button
+              variant="outline"
+              onClick={handleOrders}
+              className="font-medium text-base px-4"
+            >
+              My Orders
+            </Button>
+          )}
+
+          {user && (
             isChef ? (
               <Button
                 variant="outline"
@@ -298,11 +317,23 @@ export function Header() {
         {/* Mobile view - show UserButton when logged in, or Sign In/Up buttons when not */}
         <div className="flex md:hidden justify-center items-center">
           {isLoaded && user && (
+            <Button
+              variant="outline"
+              onClick={handleOrders}
+              className="font-medium text-sm"
+              size="sm"
+            >
+              Orders
+            </Button>
+          )}
+          
+          {isLoaded && user && (
             isChef ? (
               <Button
                 variant="outline"
                 onClick={() => navigate('/dashboard/chef')}
-                className="font-medium text-base px-4"
+                className="font-medium text-sm"
+                size="sm"
               >
                 Dashboard
               </Button>
@@ -310,12 +341,14 @@ export function Header() {
               <Button
                 variant="outline"
                 onClick={() => navigate('/become-chef')}
-                className="font-medium text-base px-4"
+                className="font-medium text-sm"
+                size="sm"
               >
                 Become a Chef
               </Button>
             )
           )}
+          
           {isLoaded && (
             <>
               {user ? (

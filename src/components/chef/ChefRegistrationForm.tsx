@@ -135,11 +135,21 @@ export function ChefRegistrationForm() {
         }
       }
       // 1. Upsert user into users table
-      await supabase.from('users').upsert({
+      const { error: userUpsertError } = await supabase.from('users').upsert({
         id: userId,
         name: user?.fullName || '',
         email,
       });
+      if (userUpsertError) {
+        console.error('Error upserting user:', userUpsertError);
+        toast({
+          title: 'Error',
+          description: `Failed to create user: ${userUpsertError.message}`,
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
 
       // 2. Insert chef data
       const { data: chef, error: chefError } = await supabase

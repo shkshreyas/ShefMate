@@ -1,46 +1,41 @@
-import { supabase } from './supabase';
-
-export async function uploadImageToSupabaseStorage(file: File, userId: string): Promise<string | null> {
-  const filePath = `chefs/${userId}/${Date.now()}_${file.name}`;
-  const { data, error } = await supabase.storage
-    .from('chef-profiles')
-    .upload(filePath, file, { upsert: true });
-
-  if (error) {
-    console.error('Supabase Storage upload failed:', error);
-    return null;
-  }
-
-  // Get the public URL
-  const { data: publicUrlData } = supabase.storage
-    .from('chef-profiles')
-    .getPublicUrl(filePath);
-
-  return publicUrlData?.publicUrl || null;
-}
-
-export async function uploadImageToFreeImageHost(file: File): Promise<string | null> {
-  const apiKey = '6d207e02198a847aa98d0a2a901485a5';
-  const formData = new FormData();
-  formData.append('key', apiKey);
-  formData.append('action', 'upload');
-  formData.append('source', file);
-  formData.append('format', 'json');
-
+export async function uploadImageToFreeImageHost(imageFile: File): Promise<string> {
   try {
-    const response = await fetch('https://freeimage.host/api/1/upload', {
+    console.log('Starting image upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+    
+    // Create a FormData object to send the file
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    
+    // Use ImgBB free API
+    // Note: In production, you should use a more reliable service or Firebase Storage
+    const apiUrl = 'https://api.imgbb.com/1/upload?key=f1c7fb499c2f3a6c5966b48318d97ff7';
+    console.log('Uploading to:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       body: formData,
     });
-    const result = await response.json();
-    if (result.status_code === 200 && result.image && result.image.url) {
-      return result.image.url;
+    
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Upload failed with status:', response.status, errorText);
+      throw new Error(`Upload failed with status: ${response.status} - ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Upload response:', data);
+    
+    if (data.success) {
+      console.log('Image uploaded successfully, URL:', data.data.url);
+      return data.data.url;
     } else {
-      console.error('Freeimage.host upload failed:', result);
-      return null;
+      console.error('Image upload failed with response:', data);
+      throw new Error('Image upload failed: ' + (data.error?.message || 'Unknown error'));
     }
   } catch (error) {
-    console.error('Freeimage.host upload error:', error);
-    return null;
+    console.error('Error uploading image:', error);
+    throw error;
   }
 } 

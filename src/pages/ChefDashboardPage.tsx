@@ -1,234 +1,449 @@
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import imageCompression from 'browser-image-compression';
-import { uploadImageToFreeImageHost } from '@/lib/uploadImage';
-
-interface Order {
-  id: string;
-  status: string;
-  order_date: string;
-  order_time: string;
-  duration: number;
-  food_preference: string;
-  customer_mobile: string;
-  created_at: string;
-  service: { service_name: string; price: number };
-  user: { email: string };
-  price: number;
-}
-
-interface Stats {
-  total_orders: number;
-  total_income: number;
-  avg_rating: number;
-  customers_served: number;
-}
-
-function ChefDashboardPageInner({ chefId }: { chefId: string }) {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [editMode, setEditMode] = useState(false);
-  const [bio, setBio] = useState('');
-  const [location, setLocation] = useState('');
-  const [experience, setExperience] = useState('');
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
-  const [profileMsg, setProfileMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchDashboard() {
-      setLoading(true);
-      // Fetch chef profile
-      const { data: chefData } = await supabase
-        .from('chefs')
-        .select('*')
-        .eq('id', chefId)
-        .single();
-      setProfile(chefData);
-      setBio(chefData?.bio || '');
-      setLocation(chefData?.location || '');
-      setExperience(chefData?.experience_years?.toString() || '');
-      setProfileImageUrl(chefData?.profile_image_url || null);
-      // Fetch orders
-      const { data: ordersData } = await supabase
-        .from('orders')
-        .select('id, status, order_date, order_time, duration, food_preference, customer_mobile, created_at, service:service_id(service_name, price), user:user_id(email)')
-        .eq('chef_id', chefId)
-        .order('created_at', { ascending: false });
-      const fixedOrders = (ordersData || []).map((o: any) => ({
-        ...o,
-        service: Array.isArray(o.service) ? o.service[0] : o.service,
-        user: Array.isArray(o.user) ? o.user[0] : o.user,
-      }));
-      setOrders(fixedOrders);
-      setLoading(false);
-    }
-    fetchDashboard();
-  }, [chefId]);
-
-  if (loading) return <div>Loading...</div>;
-
-  async function handleProfileSave() {
-    setProfileMsg(null);
-    let imageUrl = profileImageUrl;
-    if (profileImage) {
-      try {
-        const compressedFile = await imageCompression(profileImage, {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 800,
-          useWebWorker: true,
-        });
-        imageUrl = await uploadImageToFreeImageHost(compressedFile);
-      } catch (err) {
-        setProfileMsg('Image upload failed.');
-        return;
-      }
-    }
-    const { error } = await supabase
-      .from('chefs')
-      .update({
-        bio,
-        location,
-        experience_years: Number(experience),
-        profile_image_url: imageUrl,
-      })
-      .eq('id', chefId);
-    if (error) {
-      setProfileMsg('Failed to update profile.');
-    } else {
-      setProfileMsg('Profile updated successfully!');
-      setEditMode(false);
-      setProfileImage(null);
-    }
-  }
-
-  return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-extrabold mb-6 text-primary">Chef Dashboard</h1>
-      {/* Profile Edit Section */}
-      <div className="mb-10 p-6 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg border border-gray-700">
-        <h2 className="text-2xl font-bold mb-4 text-white">Profile</h2>
-        {editMode ? (
-          <div className="space-y-4">
-            <label className="block text-white font-semibold">Bio</label>
-            <textarea className="w-full border-none rounded px-3 py-2 bg-black text-white focus:ring-2 focus:ring-primary" value={bio} onChange={e => setBio(e.target.value)} />
-            <label className="block text-white font-semibold">Location</label>
-            <input className="w-full border-none rounded px-3 py-2 bg-black text-white focus:ring-2 focus:ring-primary" value={location} onChange={e => setLocation(e.target.value)} />
-            <label className="block text-white font-semibold">Experience (years)</label>
-            <input type="number" className="w-full border-none rounded px-3 py-2 bg-black text-white focus:ring-2 focus:ring-primary" value={experience} onChange={e => setExperience(e.target.value)} />
-            <label className="block text-white font-semibold">Profile Image</label>
-            <input type="file" accept="image/*" onChange={e => setProfileImage(e.target.files?.[0] || null)} className="text-white" />
-            {profileImageUrl && (
-              <img src={profileImageUrl} alt="Preview" className="h-24 w-24 rounded-full object-cover border-2 border-primary mt-2 mx-auto" />
-            )}
-            <div className="flex gap-4 mt-4">
-              <button className="px-6 py-2 bg-primary text-white rounded shadow hover:bg-primary/90 transition" onClick={handleProfileSave}>Save</button>
-              <button className="px-6 py-2 bg-gray-700 text-white rounded shadow" onClick={() => setEditMode(false)}>Cancel</button>
-            </div>
-            {profileMsg && <div className="mt-2 text-green-400 font-semibold">{profileMsg}</div>}
-          </div>
-        ) : (
-          <div className="flex items-center gap-6">
-            {profileImageUrl && <img src={profileImageUrl} alt="Chef" className="h-24 w-24 rounded-full object-cover border-2 border-primary" />}
-            <div className="text-white">
-              <div className="mb-1"><b>Bio:</b> {bio}</div>
-              <div className="mb-1"><b>Location:</b> {location}</div>
-              <div className="mb-1"><b>Experience:</b> {experience} years</div>
-              <button className="mt-2 px-6 py-2 bg-primary text-white rounded shadow hover:bg-primary/90 transition" onClick={() => setEditMode(true)}>Edit Profile</button>
-            </div>
-          </div>
-        )}
-      </div>
-      {/* Orders Table (modern look) */}
-      <div className="bg-white/5 rounded-xl shadow-lg p-6 border border-gray-700">
-        <h2 className="text-xl font-bold mb-4 text-primary">Orders</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-white">
-            <thead>
-              <tr className="bg-gray-900">
-                <th className="px-4 py-2 font-semibold">Status</th>
-                <th className="px-4 py-2 font-semibold">Customer</th>
-                <th className="px-4 py-2 font-semibold">Service</th>
-                <th className="px-4 py-2 font-semibold">Date</th>
-                <th className="px-4 py-2 font-semibold">Time</th>
-                <th className="px-4 py-2 font-semibold">Duration</th>
-                <th className="px-4 py-2 font-semibold">Food Preference</th>
-                <th className="px-4 py-2 font-semibold">Mobile</th>
-                <th className="px-4 py-2 font-semibold">Price</th>
-                <th className="px-4 py-2 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map(o => (
-                <tr key={o.id} className="border-b border-gray-700 hover:bg-gray-800 transition">
-                  <td className="px-4 py-2">{o.status}</td>
-                  <td className="px-4 py-2">{o.user?.email}</td>
-                  <td className="px-4 py-2">{o.service?.service_name}</td>
-                  <td className="px-4 py-2">{o.order_date}</td>
-                  <td className="px-4 py-2">{o.order_time}</td>
-                  <td className="px-4 py-2">{o.duration}h</td>
-                  <td className="px-4 py-2">{o.food_preference}</td>
-                  <td className="px-4 py-2">{o.customer_mobile}</td>
-                  <td className="px-4 py-2">₹{o.service?.price}</td>
-                  <td className="px-4 py-2">
-                    {o.status === 'pending' && (
-                      <div className="flex gap-2">
-                        <button className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition" onClick={() => updateOrder(o.id, 'completed')}>Complete</button>
-                        <button className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition" onClick={() => updateOrder(o.id, 'cancelled')}>Cancel</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-
-  async function updateOrder(orderId: string, status: string) {
-    await supabase
-      .from('orders')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', orderId);
-    setOrders(orders => orders.map(o => o.id === orderId ? { ...o, status } : o));
-  }
-}
+import { getChefByUserId, getOrdersByChefId, updateOrderStatus, subscribeToChefOrders } from '@/lib/firebase-utils';
+import { useNavigate } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from "@/hooks/use-toast";
 
 export default function ChefDashboardPage() {
   const { user, isLoaded } = useUser();
-  const [chefId, setChefId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [chef, setChef] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('pending');
 
   useEffect(() => {
-    async function fetchChefId() {
-      if (user) {
-        const { data, error } = await supabase
-          .from('chefs')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-        if (error || !data) {
-          setError('No chef profile found for this user.');
-          setLoading(false);
-        } else {
-          setChefId(data.id);
+    if (isLoaded && !user) {
+      navigate('/sign-in');
+    }
+  }, [user, isLoaded, navigate]);
+
+  useEffect(() => {
+    async function fetchChefData() {
+      if (isLoaded && user) {
+        try {
+          const chefData = await getChefByUserId(user.id);
+          if (!chefData) {
+            navigate('/become-chef');
+            return;
+          }
+          
+          setChef(chefData);
+          
+          // Subscribe to real-time order updates
+          const unsubscribe = subscribeToChefOrders(chefData.id, (updatedOrders) => {
+            setOrders(updatedOrders);
+            setLoading(false);
+          });
+          
+          return () => unsubscribe();
+        } catch (err) {
+          console.error('Error fetching chef data:', err);
+          setError('Failed to load chef data');
           setLoading(false);
         }
-      } else if (isLoaded) {
-        setError('Please log in as a chef.');
-        setLoading(false);
       }
     }
-    fetchChefId();
-  }, [user, isLoaded]);
+    
+    fetchChefData();
+  }, [isLoaded, user, navigate]);
 
-  if (!isLoaded || loading) return <div>Loading dashboard...</div>;
-  if (error) return <div>{error}</div>;
-  if (!chefId) return <div>No chef profile found.</div>;
-  return <ChefDashboardPageInner chefId={chefId} />;
+  async function handleUpdateOrderStatus(orderId: string, status: string) {
+    try {
+      await updateOrderStatus(orderId, status);
+      
+      // Show toast notification
+      toast({
+        title: `Order ${status}`,
+        description: `Order has been marked as ${status}.`,
+        variant: status === 'cancelled' ? 'destructive' : 'default',
+      });
+      
+      // The real-time subscription will update the orders
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      setError('Failed to update order status');
+      
+      toast({
+        title: "Error",
+        description: "Failed to update order status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }
+
+  function getStatusColor(status: string) {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'accepted':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'completed':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  }
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl text-red-600">{error}</div>
+      </div>
+    );
+  }
+
+  // Filter orders by status
+  const pendingOrders = orders.filter(order => order.status === 'pending');
+  const acceptedOrders = orders.filter(order => order.status === 'accepted');
+  const completedOrders = orders.filter(order => order.status === 'completed');
+  const cancelledOrders = orders.filter(order => order.status === 'cancelled');
+
+  // Calculate earnings
+  const totalEarnings = completedOrders.reduce((sum, order) => sum + (order.price || 0), 0);
+  const pendingEarnings = pendingOrders.reduce((sum, order) => sum + (order.price || 0), 0);
+  const acceptedEarnings = acceptedOrders.reduce((sum, order) => sum + (order.price || 0), 0);
+
+  return (
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-6">Chef Dashboard</h1>
+      
+      {chef && (
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex items-center gap-4">
+              {chef.profileImage && (
+                <img 
+                  src={chef.profileImage} 
+                  alt={chef.displayName} 
+                  className="w-24 h-24 rounded-full object-cover border-4 border-primary"
+                />
+              )}
+              <div>
+                <h2 className="text-2xl font-bold">{chef.displayName}</h2>
+                <p className="text-gray-600">{chef.location}</p>
+                <div className="mt-1 flex flex-wrap gap-2">
+                  <Badge className="bg-primary text-white">
+                    {chef.experienceYears} years experience
+                  </Badge>
+                  <Badge className="bg-gray-800 text-white">
+                    {chef.rating || '0'} ★ Rating
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            
+            <div className="md:ml-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="text-center bg-gray-50 p-3 rounded-lg">
+                <p className="text-gray-500 text-sm">Total Orders</p>
+                <p className="text-2xl font-semibold">{chef.totalOrders || 0}</p>
+              </div>
+              <div className="text-center bg-gray-50 p-3 rounded-lg">
+                <p className="text-gray-500 text-sm">Customers Served</p>
+                <p className="text-2xl font-semibold">{chef.customersServed || 0}</p>
+              </div>
+              <div className="text-center bg-green-50 p-3 rounded-lg">
+                <p className="text-green-700 text-sm">Total Earnings</p>
+                <p className="text-2xl font-semibold text-green-700">₹{totalEarnings}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4">
+            <Button onClick={() => navigate('/become-chef')} variant="outline" className="mr-2">
+              Edit Profile
+            </Button>
+            <Button onClick={() => navigate(`/chefs/${chef.id}`)} variant="outline">
+              View Public Profile
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 className="text-xl font-semibold mb-4">Orders Overview</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Pending</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between">
+                <p className="text-3xl font-bold">{pendingOrders.length}</p>
+                <p className="text-xl font-semibold text-yellow-600">₹{pendingEarnings}</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Accepted</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between">
+                <p className="text-3xl font-bold">{acceptedOrders.length}</p>
+                <p className="text-xl font-semibold text-blue-600">₹{acceptedEarnings}</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Completed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between">
+                <p className="text-3xl font-bold">{completedOrders.length}</p>
+                <p className="text-xl font-semibold text-green-600">₹{totalEarnings}</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Cancelled</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{cancelledOrders.length}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="mb-8">
+          <TabsTrigger value="pending" className="relative">
+            Pending
+            {pendingOrders.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingOrders.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="accepted" className="relative">
+            Accepted
+            {acceptedOrders.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {acceptedOrders.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="pending" className="space-y-4">
+          {pendingOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No pending orders</div>
+          ) : (
+            pendingOrders.map(order => (
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onUpdateStatus={handleUpdateOrderStatus}
+                showAcceptButton={true}
+              />
+            ))
+          )}
+        </TabsContent>
+        
+        <TabsContent value="accepted" className="space-y-4">
+          {acceptedOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No accepted orders</div>
+          ) : (
+            acceptedOrders.map(order => (
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onUpdateStatus={handleUpdateOrderStatus}
+                showCompleteButton={true}
+              />
+            ))
+          )}
+        </TabsContent>
+        
+        <TabsContent value="completed" className="space-y-4">
+          {completedOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No completed orders</div>
+          ) : (
+            completedOrders.map(order => (
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onUpdateStatus={handleUpdateOrderStatus}
+              />
+            ))
+          )}
+        </TabsContent>
+        
+        <TabsContent value="cancelled" className="space-y-4">
+          {cancelledOrders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No cancelled orders</div>
+          ) : (
+            cancelledOrders.map(order => (
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onUpdateStatus={handleUpdateOrderStatus}
+              />
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+interface OrderCardProps {
+  order: any;
+  onUpdateStatus: (orderId: string, status: string) => void;
+  showAcceptButton?: boolean;
+  showCompleteButton?: boolean;
+}
+
+function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton }: OrderCardProps) {
+  const navigate = useNavigate();
+  
+  // Use formatted date if available, otherwise try to format from Timestamp
+  const displayDate = order.formattedDate || (order.orderDate ? 
+    (order.orderDate.toDate ? 
+      order.orderDate.toDate().toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }) 
+      : new Date(order.orderDate).toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }))
+    : 'Unknown date');
+  
+  // Display the time - could be a string or could need formatting
+  const displayTime = order.orderTime || 'Unknown time';
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">Pending</Badge>;
+      case 'accepted':
+        return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">Accepted</Badge>;
+      case 'completed':
+        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Completed</Badge>;
+      case 'cancelled':
+        return <Badge variant="outline" className="bg-red-100 text-red-800 border-red-200">Cancelled</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const handleCallCustomer = () => {
+    if (order.customerMobile) {
+      window.open(`tel:${order.customerMobile}`);
+    } else {
+      toast({
+        title: "No phone number",
+        description: "Customer phone number is not available.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Card className="w-full hover:shadow-md transition-shadow duration-200">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle>Order #{order.id.substring(0, 8)}</CardTitle>
+            <CardDescription>
+              {displayDate} at {displayTime}
+            </CardDescription>
+          </div>
+          {getStatusBadge(order.status)}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-700">Customer:</span> 
+            <span className="text-primary font-medium">{order.userName}</span>
+          </div>
+          <div>
+            <span className="font-medium text-gray-700">Phone:</span> {order.customerMobile}
+          </div>
+          <div>
+            <span className="font-medium text-gray-700">Location:</span> {order.orderLocation}
+          </div>
+          <div>
+            <span className="font-medium text-gray-700">Duration:</span> {order.duration} hour(s)
+          </div>
+          {order.foodPreference && (
+            <div>
+              <span className="font-medium text-gray-700">Food Preference:</span> {order.foodPreference}
+            </div>
+          )}
+          <div>
+            <span className="font-medium text-gray-700">Service:</span> {order.serviceName}
+          </div>
+          <div className="mt-1">
+            <span className="font-medium text-gray-700 text-lg">Price:</span> <span className="text-green-600 font-semibold text-lg">₹{order.price}</span>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex flex-wrap justify-end gap-2">
+        {showAcceptButton && (
+          <>
+            <Button 
+              variant="outline" 
+              className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+              onClick={() => onUpdateStatus(order.id, 'cancelled')}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-primary hover:bg-primary/90" 
+              onClick={() => onUpdateStatus(order.id, 'accepted')}
+            >
+              Accept Order
+            </Button>
+          </>
+        )}
+        
+        {showCompleteButton && (
+          <>
+            <Button
+              variant="outline"
+              className="border-blue-300 text-blue-600 hover:bg-blue-50"
+              onClick={handleCallCustomer}
+            >
+              Call Customer
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white" 
+              onClick={() => onUpdateStatus(order.id, 'completed')}
+            >
+              Mark as Completed
+            </Button>
+          </>
+        )}
+      </CardFooter>
+    </Card>
+  );
 } 
