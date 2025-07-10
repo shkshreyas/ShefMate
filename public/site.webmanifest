@@ -1,0 +1,104 @@
+{
+  "name": "ShefMate - Professional Private Chefs at Home",
+  "short_name": "ShefMate",
+  "description": "Book professional private chefs for home cooking. Enjoy restaurant-quality meals prepared in your kitchen. Specializing in Indian, Italian, Asian & International cuisine.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["food", "lifestyle", "business", "utilities"],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ShefMate Homepage - Browse Professional Chefs"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ShefMate Mobile - Book Your Personal Chef"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Chefs",
+      "short_name": "Chefs",
+      "description": "Browse and book professional chefs",
+      "url": "/chefs",
+      "icons": [
+        {
+          "src": "/chef-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "description": "View your booking history",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "/order-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Become a Chef",
+      "short_name": "Join",
+      "description": "Register as a professional chef",
+      "url": "/become-chef",
+      "icons": [
+        {
+          "src": "/join-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://shefmate.com"
+    }
+  ],
+  "prefer_related_applications": false
+} 

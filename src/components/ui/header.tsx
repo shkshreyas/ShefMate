@@ -256,7 +256,7 @@ export function Header() {
             <Button
               variant="outline"
               onClick={handleOrders}
-              className="font-medium text-base px-4"
+              className="font-medium text-base px-4 hidden md:inline-flex"
             >
               My Orders
             </Button>
@@ -267,7 +267,7 @@ export function Header() {
               <Button
                 variant="outline"
                 onClick={() => navigate('/dashboard/chef')}
-                className="font-medium text-base px-4"
+                className="font-medium text-base px-4 hidden md:inline-flex"
               >
                 Dashboard
               </Button>
@@ -275,7 +275,7 @@ export function Header() {
               <Button
                 variant="outline"
                 onClick={() => navigate('/become-chef')}
-                className="font-medium text-base px-4"
+                className="font-medium text-base px-4 hidden md:inline-flex"
               >
                 Register as Shef
               </Button>
@@ -316,39 +316,6 @@ export function Header() {
         
         {/* Mobile view - show UserButton when logged in, or Sign In/Up buttons when not */}
         <div className="flex md:hidden justify-center items-center">
-          {isLoaded && user && (
-            <Button
-              variant="outline"
-              onClick={handleOrders}
-              className="font-medium text-sm"
-              size="sm"
-            >
-              Orders
-            </Button>
-          )}
-          
-          {isLoaded && user && (
-            isChef ? (
-              <Button
-                variant="outline"
-                onClick={() => navigate('/dashboard/chef')}
-                className="font-medium text-sm"
-                size="sm"
-              >
-                Dashboard
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => navigate('/become-chef')}
-                className="font-medium text-sm"
-                size="sm"
-              >
-                Become a Chef
-              </Button>
-            )
-          )}
-          
           {isLoaded && (
             <>
               {user ? (

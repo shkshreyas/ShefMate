@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Bot, Search, MapPin, Star, Clock, CheckCircle } from 'lucide-react';
 
 export default function ChefListingPage() {
   const [chefs, setChefs] = useState<any[]>([]);
@@ -62,7 +63,10 @@ export default function ChefListingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading chefs...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="text-xl font-medium">Loading chefs...</div>
+        </div>
       </div>
     );
   }
@@ -77,12 +81,40 @@ export default function ChefListingPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-2">Find Your Perfect Chef</h1>
-      <p className="text-gray-600 mb-8">Browse through our talented chefs and find the perfect match for your culinary needs</p>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-red-500">Find Your Perfect Chef</h1>
+        <p className="text-gray-600 text-lg max-w-2xl mx-auto">Browse through our talented chefs and find the perfect match for your culinary needs</p>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* AI Assistant Banner */}
+      <div className="mb-10 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 shadow-sm border border-purple-100">
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-full text-white">
+            <Bot size={28} />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold mb-1">Need help finding the perfect chef?</h3>
+            <p className="text-gray-600">Our AI assistant can recommend chefs based on your preferences, dietary requirements, or special occasions. Just click the chat icon in the corner!</p>
+          </div>
+          <Button 
+            onClick={() => {
+              // This will trigger the chatbot to open
+              const event = new CustomEvent('open-ai-chatbot');
+              window.dispatchEvent(event);
+            }}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white"
+          >
+            Ask for Recommendations
+          </Button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 bg-white p-6 rounded-xl shadow-sm">
         <div>
-          <Label htmlFor="search">Search</Label>
+          <Label htmlFor="search" className="flex items-center gap-2 mb-2">
+            <Search size={16} />
+            <span>Search</span>
+          </Label>
           <Input 
             id="search"
             placeholder="Search by name, bio or location" 
@@ -93,7 +125,10 @@ export default function ChefListingPage() {
         </div>
         
         <div>
-          <Label htmlFor="location">Filter by Location</Label>
+          <Label htmlFor="location" className="flex items-center gap-2 mb-2">
+            <MapPin size={16} />
+            <span>Filter by Location</span>
+          </Label>
           <Select value={locationFilter} onValueChange={setLocationFilter}>
             <SelectTrigger id="location">
               <SelectValue placeholder="All Locations" />
@@ -108,7 +143,10 @@ export default function ChefListingPage() {
         </div>
         
         <div>
-          <Label htmlFor="sort">Sort By</Label>
+          <Label htmlFor="sort" className="flex items-center gap-2 mb-2">
+            <Star size={16} />
+            <span>Sort By</span>
+          </Label>
           <Select value={sortOption} onValueChange={setSortOption}>
             <SelectTrigger id="sort">
               <SelectValue placeholder="Rating" />
@@ -123,9 +161,12 @@ export default function ChefListingPage() {
       </div>
       
       {sortedChefs.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <p className="text-xl mb-2">No chefs found</p>
-          <p>Try adjusting your filters or search terms</p>
+        <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+          <div className="w-16 h-16 mx-auto mb-4 text-gray-300">
+            <Search size={64} />
+          </div>
+          <p className="text-xl font-medium mb-2">No chefs found</p>
+          <p className="text-gray-500">Try adjusting your filters or search terms</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -140,16 +181,16 @@ export default function ChefListingPage() {
 
 function ChefCard({ chef }: { chef: any }) {
   return (
-    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg group">
       <div className="h-48 overflow-hidden">
         {chef.profileImage ? (
           <img 
             src={chef.profileImage} 
             alt={chef.displayName} 
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
             <span className="text-gray-400 text-2xl">No Image</span>
           </div>
         )}
@@ -157,21 +198,27 @@ function ChefCard({ chef }: { chef: any }) {
       
       <CardHeader>
         <div className="flex justify-between items-start">
-          <CardTitle>{chef.displayName}</CardTitle>
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-            {chef.rating ? `${chef.rating.toFixed(1)} ★` : 'New Chef'}
+          <CardTitle className="text-xl">{chef.displayName}</CardTitle>
+          <Badge variant="outline" className="bg-gradient-to-r from-yellow-50 to-amber-50 text-amber-700 border-amber-200 flex items-center gap-1">
+            <Star size={14} className="fill-amber-500 text-amber-500" />
+            {chef.rating ? `${chef.rating.toFixed(1)}` : 'New Chef'}
           </Badge>
         </div>
-        <CardDescription>{chef.location}</CardDescription>
+        <CardDescription className="flex items-center gap-1">
+          <MapPin size={14} className="text-gray-400" />
+          {chef.location || 'Location not specified'}
+        </CardDescription>
       </CardHeader>
       
       <CardContent>
         <p className="text-sm text-gray-600 line-clamp-3 mb-4">{chef.bio}</p>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="bg-blue-50 text-blue-700">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 flex items-center gap-1">
+            <Clock size={14} />
             {chef.experienceYears} years experience
           </Badge>
-          <Badge variant="outline" className="bg-purple-50 text-purple-700">
+          <Badge variant="outline" className="bg-green-50 text-green-700 flex items-center gap-1">
+            <CheckCircle size={14} />
             {chef.totalOrders || 0} orders completed
           </Badge>
         </div>
@@ -179,7 +226,9 @@ function ChefCard({ chef }: { chef: any }) {
       
       <CardFooter>
         <Link to={`/chefs/${chef.id}`} className="w-full">
-          <Button className="w-full bg-primary hover:bg-primary/90">View Profile</Button>
+          <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300">
+            View Profile
+          </Button>
         </Link>
       </CardFooter>
     </Card>

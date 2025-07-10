@@ -120,22 +120,22 @@ export default function ChefDashboardPage() {
   const acceptedEarnings = acceptedOrders.reduce((sum, order) => sum + (order.price || 0), 0);
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Chef Dashboard</h1>
+    <div className="container mx-auto py-6 px-4 pb-20 md:pb-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chef Dashboard</h1>
       
       {chef && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-4">
               {chef.profileImage && (
                 <img 
                   src={chef.profileImage} 
                   alt={chef.displayName} 
-                  className="w-24 h-24 rounded-full object-cover border-4 border-primary"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-primary"
                 />
               )}
               <div>
-                <h2 className="text-2xl font-bold">{chef.displayName}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold">{chef.displayName}</h2>
                 <p className="text-gray-600">{chef.location}</p>
                 <div className="mt-1 flex flex-wrap gap-2">
                   <Badge className="bg-primary text-white">
@@ -148,85 +148,85 @@ export default function ChefDashboardPage() {
               </div>
             </div>
             
-            <div className="md:ml-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="md:ml-auto grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 md:mt-0">
               <div className="text-center bg-gray-50 p-3 rounded-lg">
-                <p className="text-gray-500 text-sm">Total Orders</p>
-                <p className="text-2xl font-semibold">{chef.totalOrders || 0}</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Total Orders</p>
+                <p className="text-xl sm:text-2xl font-semibold">{chef.totalOrders || 0}</p>
               </div>
               <div className="text-center bg-gray-50 p-3 rounded-lg">
-                <p className="text-gray-500 text-sm">Customers Served</p>
-                <p className="text-2xl font-semibold">{chef.customersServed || 0}</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Customers</p>
+                <p className="text-xl sm:text-2xl font-semibold">{chef.customersServed || 0}</p>
               </div>
               <div className="text-center bg-green-50 p-3 rounded-lg">
-                <p className="text-green-700 text-sm">Total Earnings</p>
-                <p className="text-2xl font-semibold text-green-700">₹{totalEarnings}</p>
+                <p className="text-green-700 text-xs sm:text-sm">Earnings</p>
+                <p className="text-xl sm:text-2xl font-semibold text-green-700">₹{totalEarnings}</p>
               </div>
             </div>
           </div>
           
-          <div className="mt-4">
-            <Button onClick={() => navigate('/become-chef')} variant="outline" className="mr-2">
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button onClick={() => navigate('/become-chef')} variant="outline" size="sm" className="text-sm">
               Edit Profile
             </Button>
-            <Button onClick={() => navigate(`/chefs/${chef.id}`)} variant="outline">
+            <Button onClick={() => navigate(`/chefs/${chef.id}`)} variant="outline" size="sm" className="text-sm">
               View Public Profile
             </Button>
           </div>
         </div>
       )}
       
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h3 className="text-xl font-semibold mb-4">Orders Overview</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Pending</CardTitle>
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">Orders Overview</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-3 pt-0 px-3">
               <div className="flex justify-between">
-                <p className="text-3xl font-bold">{pendingOrders.length}</p>
-                <p className="text-xl font-semibold text-yellow-600">₹{pendingEarnings}</p>
+                <p className="text-2xl font-bold">{pendingOrders.length}</p>
+                <p className="text-lg font-semibold text-yellow-600">₹{pendingEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Accepted</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Accepted</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-3 pt-0 px-3">
               <div className="flex justify-between">
-                <p className="text-3xl font-bold">{acceptedOrders.length}</p>
-                <p className="text-xl font-semibold text-blue-600">₹{acceptedEarnings}</p>
+                <p className="text-2xl font-bold">{acceptedOrders.length}</p>
+                <p className="text-lg font-semibold text-blue-600">₹{acceptedEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Completed</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-3 pt-0 px-3">
               <div className="flex justify-between">
-                <p className="text-3xl font-bold">{completedOrders.length}</p>
-                <p className="text-xl font-semibold text-green-600">₹{totalEarnings}</p>
+                <p className="text-2xl font-bold">{completedOrders.length}</p>
+                <p className="text-lg font-semibold text-green-600">₹{totalEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Cancelled</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Cancelled</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{cancelledOrders.length}</p>
+            <CardContent className="pb-3 pt-0 px-3">
+              <p className="text-2xl font-bold">{cancelledOrders.length}</p>
             </CardContent>
           </Card>
         </div>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-8">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
           <TabsTrigger value="pending" className="relative">
             Pending
             {pendingOrders.length > 0 && (
@@ -249,14 +249,16 @@ export default function ChefDashboardPage() {
         
         <TabsContent value="pending" className="space-y-4">
           {pendingOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No pending orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No pending orders</p>
+            </div>
           ) : (
             pendingOrders.map(order => (
               <OrderCard 
                 key={order.id} 
                 order={order} 
                 onUpdateStatus={handleUpdateOrderStatus}
-                showAcceptButton={true}
+                showAcceptButton
               />
             ))
           )}
@@ -264,14 +266,16 @@ export default function ChefDashboardPage() {
         
         <TabsContent value="accepted" className="space-y-4">
           {acceptedOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No accepted orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No accepted orders</p>
+            </div>
           ) : (
             acceptedOrders.map(order => (
               <OrderCard 
                 key={order.id} 
                 order={order} 
                 onUpdateStatus={handleUpdateOrderStatus}
-                showCompleteButton={true}
+                showCompleteButton
               />
             ))
           )}
@@ -279,7 +283,9 @@ export default function ChefDashboardPage() {
         
         <TabsContent value="completed" className="space-y-4">
           {completedOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No completed orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No completed orders</p>
+            </div>
           ) : (
             completedOrders.map(order => (
               <OrderCard 
@@ -293,7 +299,9 @@ export default function ChefDashboardPage() {
         
         <TabsContent value="cancelled" className="space-y-4">
           {cancelledOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No cancelled orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No cancelled orders</p>
+            </div>
           ) : (
             cancelledOrders.map(order => (
               <OrderCard 
@@ -317,28 +325,16 @@ interface OrderCardProps {
 }
 
 function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton }: OrderCardProps) {
-  const navigate = useNavigate();
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
   
-  // Use formatted date if available, otherwise try to format from Timestamp
-  const displayDate = order.formattedDate || (order.orderDate ? 
-    (order.orderDate.toDate ? 
-      order.orderDate.toDate().toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }) 
-      : new Date(order.orderDate).toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }))
-    : 'Unknown date');
-  
-  // Display the time - could be a string or could need formatting
-  const displayTime = order.orderTime || 'Unknown time';
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -353,95 +349,97 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
         return <Badge variant="outline">{status}</Badge>;
     }
   };
-
+  
   const handleCallCustomer = () => {
     if (order.customerMobile) {
-      window.open(`tel:${order.customerMobile}`);
-    } else {
-      toast({
-        title: "No phone number",
-        description: "Customer phone number is not available.",
-        variant: "destructive",
-      });
+      window.location.href = `tel:${order.customerMobile}`;
     }
   };
-
+  
   return (
-    <Card className="w-full hover:shadow-md transition-shadow duration-200">
-      <CardHeader>
-        <div className="flex justify-between items-start">
+    <Card className="overflow-hidden border-0 shadow-md rounded-xl">
+      <CardHeader className="pb-2 bg-gray-50">
+        <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Order #{order.id.substring(0, 8)}</CardTitle>
-            <CardDescription>
-              {displayDate} at {displayTime}
-            </CardDescription>
+            <CardTitle className="text-base sm:text-lg">{order.serviceName}</CardTitle>
+            <CardDescription>Order #{order.id.substring(0, 8)}</CardDescription>
           </div>
           {getStatusBadge(order.status)}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-700">Customer:</span> 
-            <span className="text-primary font-medium">{order.userName}</span>
+      <CardContent className="pt-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div>
+            <p className="text-gray-500">Customer</p>
+            <p className="font-medium">{order.userName}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Phone:</span> {order.customerMobile}
+            <p className="text-gray-500">Price</p>
+            <p className="font-medium">₹{order.price}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Location:</span> {order.orderLocation}
+            <p className="text-gray-500">Date</p>
+            <p>{formatDate(order.orderDate)}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Duration:</span> {order.duration} hour(s)
+            <p className="text-gray-500">Time</p>
+            <p>{order.orderTime || 'N/A'}</p>
           </div>
-          {order.foodPreference && (
-            <div>
-              <span className="font-medium text-gray-700">Food Preference:</span> {order.foodPreference}
+          <div className="col-span-2">
+            <p className="text-gray-500">Location</p>
+            <p className="truncate">{order.orderLocation}</p>
+          </div>
+          {order.orderNotes && (
+            <div className="col-span-2">
+              <p className="text-gray-500">Notes</p>
+              <p>{order.orderNotes}</p>
             </div>
           )}
-          <div>
-            <span className="font-medium text-gray-700">Service:</span> {order.serviceName}
-          </div>
-          <div className="mt-1">
-            <span className="font-medium text-gray-700 text-lg">Price:</span> <span className="text-green-600 font-semibold text-lg">₹{order.price}</span>
-          </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-wrap justify-end gap-2">
+      <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-4 bg-gray-50">
+        {order.customerMobile && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleCallCustomer}
+            className="text-sm"
+          >
+            Call Customer
+          </Button>
+        )}
+        
         {showAcceptButton && (
-          <>
-            <Button 
-              variant="outline" 
-              className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
-              onClick={() => onUpdateStatus(order.id, 'cancelled')}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-primary hover:bg-primary/90" 
-              onClick={() => onUpdateStatus(order.id, 'accepted')}
-            >
-              Accept Order
-            </Button>
-          </>
+          <Button 
+            variant="default"
+            size="sm"
+            onClick={() => onUpdateStatus(order.id, 'accepted')}
+            className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
+          >
+            Accept Order
+          </Button>
+        )}
+        
+        {showAcceptButton && (
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => onUpdateStatus(order.id, 'cancelled')}
+            className="text-red-500 border-red-200 hover:bg-red-50 text-sm"
+          >
+            Decline
+          </Button>
         )}
         
         {showCompleteButton && (
-          <>
-            <Button
-              variant="outline"
-              className="border-blue-300 text-blue-600 hover:bg-blue-50"
-              onClick={handleCallCustomer}
-            >
-              Call Customer
-            </Button>
-            <Button
-              className="bg-green-600 hover:bg-green-700 text-white" 
-              onClick={() => onUpdateStatus(order.id, 'completed')}
-            >
-              Mark as Completed
-            </Button>
-          </>
+          <Button 
+            variant="default"
+            size="sm"
+            onClick={() => onUpdateStatus(order.id, 'completed')}
+            className="bg-green-500 hover:bg-green-600 text-white text-sm"
+          >
+            Mark Completed
+          </Button>
         )}
       </CardFooter>
     </Card>

@@ -3,9 +3,12 @@ import { HeroDemo1 } from './components/demos/HeroGalleryDemo';
 import { ShuffleHero } from './components/ui/shuffle-grid';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { PricingPage } from './components/pricing/PricingPage';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { MobileTabBar } from './components/ui/mobile-tab-bar';
 import { Header } from './components/ui/header';
+import { AIChatbot } from './components/ui/ai-chatbot';
+import { SEOHead, SEOConfigs } from './components/ui/seo-head';
+import { PerformanceOptimizer } from './components/ui/performance-optimizer';
 import './App.css';
 import { BlogsTestimonials } from '@/components/blocks/blogs-testimonials';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
@@ -45,6 +48,12 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Performance Optimizer */}
+      <PerformanceOptimizer />
+      
+      {/* SEO Head */}
+      <SEOHead {...SEOConfigs.home} />
+      
       {/* Header is now a separate component */}
       <Header />
       
@@ -69,6 +78,9 @@ function AppContent() {
         </DialogContent>
       </Dialog>
       
+      {/* AI Chatbot */}
+      <AIChatbot />
+      
       {/* Mobile Tab Bar - Only visible on mobile */}
       <MobileTabBar />
       
@@ -78,8 +90,21 @@ function AppContent() {
   );
 }
 
-function PageWithHeader({ children }: { children: React.ReactNode }) {
+function PageWithHeader({ children, seoConfig }: { children: React.ReactNode; seoConfig?: any }) {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const location = useLocation();
+  
+  // Show chatbot on pages where customer support would be useful
+  const showChatbot = [
+    '/chefs',
+    '/chefs/',
+    '/orders',
+    '/learn',
+    '/about',
+    '/services',
+    '/contact',
+    '/help'
+  ].some(path => location.pathname.startsWith(path));
 
   // Listen for custom events from the Header component
   useEffect(() => {
@@ -94,6 +119,12 @@ function PageWithHeader({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Performance Optimizer */}
+      <PerformanceOptimizer />
+      
+      {/* SEO Head */}
+      <SEOHead {...seoConfig} />
+      
       {/* Header is now a separate component */}
       <Header />
       
@@ -110,6 +141,9 @@ function PageWithHeader({ children }: { children: React.ReactNode }) {
         </DialogContent>
       </Dialog>
       
+      {/* AI Chatbot - Show on relevant pages */}
+      {showChatbot && <AIChatbot />}
+      
       {/* Mobile Tab Bar - Only visible on mobile */}
       <MobileTabBar />
       
@@ -124,20 +158,20 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<AppContent />} />
-        <Route path="/chefs" element={<PageWithHeader><ChefListingPage /></PageWithHeader>} />
+        <Route path="/chefs" element={<PageWithHeader seoConfig={SEOConfigs.chefs}><ChefListingPage /></PageWithHeader>} />
         <Route path="/chefs/:id" element={<PageWithHeader><ChefDetailPage /></PageWithHeader>} />
         <Route path="/chef-dashboard" element={<PageWithHeader><ChefDashboardPage /></PageWithHeader>} />
         <Route path="/dashboard/chef" element={<PageWithHeader><ChefDashboardPage /></PageWithHeader>} />
-        <Route path="/become-chef" element={<PageWithHeader><BecomeChefPage /></PageWithHeader>} />
+        <Route path="/become-chef" element={<PageWithHeader seoConfig={SEOConfigs.becomeChef}><BecomeChefPage /></PageWithHeader>} />
         <Route path="/orders" element={<PageWithHeader><CustomerOrdersPage /></PageWithHeader>} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/learn" element={<PageWithHeader><LearnPage /></PageWithHeader>} />
+        <Route path="/learn" element={<PageWithHeader seoConfig={SEOConfigs.learn}><LearnPage /></PageWithHeader>} />
         <Route path="/privacy-policy" element={<PageWithHeader><PrivacyPolicyPage /></PageWithHeader>} />
         <Route path="/terms-of-service" element={<PageWithHeader><TermsOfServicePage /></PageWithHeader>} />
-        <Route path="/help" element={<PageWithHeader><HelpCenterPage /></PageWithHeader>} />
-        <Route path="/contact" element={<PageWithHeader><ContactPage /></PageWithHeader>} />
-        <Route path="/about" element={<PageWithHeader><AboutPage /></PageWithHeader>} />
-        <Route path="/services" element={<PageWithHeader><ServicesPage /></PageWithHeader>} />
+        <Route path="/help" element={<PageWithHeader seoConfig={SEOConfigs.help}><HelpCenterPage /></PageWithHeader>} />
+        <Route path="/contact" element={<PageWithHeader seoConfig={SEOConfigs.contact}><ContactPage /></PageWithHeader>} />
+        <Route path="/about" element={<PageWithHeader seoConfig={SEOConfigs.about}><AboutPage /></PageWithHeader>} />
+        <Route path="/services" element={<PageWithHeader seoConfig={SEOConfigs.services}><ServicesPage /></PageWithHeader>} />
         <Route path="/cookie-policy" element={<PageWithHeader><CookiePolicyPage /></PageWithHeader>} />
         {/* Redirect any unknown routes to the home */}
         <Route path="*" element={<Navigate to="/" replace />} />

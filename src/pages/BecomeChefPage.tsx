@@ -116,12 +116,12 @@ export default function BecomeChefPage() {
 
   function Stepper() {
     return (
-      <div className="flex justify-center gap-2 mb-4">
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
         {STEPS.map((label, idx) => (
           <div key={label} className={`flex items-center gap-1 ${idx === step ? 'font-bold text-primary' : 'text-gray-400'}`}> 
             <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 ${idx === step ? 'border-primary bg-primary text-white' : 'border-gray-300 bg-white'}`}>{idx + 1}</div>
             <span className="text-sm">{label}</span>
-            {idx < STEPS.length - 1 && <span className="w-6 h-0.5 bg-gray-200 mx-1" />}
+            {idx < STEPS.length - 1 && <span className="hidden sm:block w-6 h-0.5 bg-gray-200 mx-1" />}
           </div>
         ))}
       </div>
@@ -396,194 +396,486 @@ export default function BecomeChefPage() {
 
   if (showSummary) {
     return (
-      <div className="container max-w-lg mx-auto py-8">
-        <LogoHeader />
-        <Stepper />
-        <h2 className="text-2xl font-bold mb-4">Your Services</h2>
-        <ul className="mb-4">
-          {addedServices.map(s => (
-            <li key={s.id} className="mb-2 border-b pb-2">
-              <div className="font-semibold">{s.serviceName}</div>
-              <div className="text-sm text-gray-600">{s.description}</div>
-              <div className="text-sm">Price: ₹{s.price}</div>
-            </li>
-          ))}
-        </ul>
-        <button className="px-4 py-2 bg-primary text-white rounded w-full mt-4 shadow-lg hover:bg-primary/90 transition" onClick={handleGoToDashboard}>
-          Finish & Go to Dashboard
-        </button>
+      <div className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-6 md:py-12 pb-20">
+        <div className="max-w-3xl mx-auto">
+          <LogoHeader />
+          <Stepper />
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 animate-fade-in">
+            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-4">Registration Complete</h2>
+            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+              <h3 className="font-semibold text-lg mb-3">Your Services</h3>
+              <div className="space-y-3">
+                {addedServices.map((service) => (
+                  <div key={service.id} className="border-b border-gray-200 pb-3 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium text-gray-900">{service.serviceName}</h4>
+                      <p className="font-bold text-gray-900">₹{service.price}</p>
+                    </div>
+                    <p className="text-sm text-gray-600">{service.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <button 
+              className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors" 
+              onClick={handleGoToDashboard}
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (showServiceForm) {
     return (
-      <div className="container max-w-lg mx-auto py-8">
-        <LogoHeader />
-        <Stepper />
-        <h2 className="text-2xl font-bold mb-4">Add Your Services</h2>
-        <form onSubmit={handleAddService} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Service Name</label>
-            <input 
-              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-              value={serviceName} 
-              onChange={e => setServiceName(e.target.value)} 
-              required 
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Description</label>
-            <textarea 
-              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-              value={serviceDescription} 
-              onChange={e => setServiceDescription(e.target.value)} 
-              required 
-              rows={4}
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Price (₹)</label>
-            <input 
-              type="number" 
-              className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-              value={servicePrice} 
-              onChange={e => setServicePrice(e.target.value)} 
-              required 
-            />
-          </div>
-          {error && <div className="text-red-600 font-medium">{error}</div>}
-          <div className="flex gap-2">
-            <button 
-              type="submit" 
-              className="px-4 py-2 bg-primary text-white rounded shadow hover:bg-primary/90 transition" 
-              disabled={loading}
-            >
-              {loading ? 'Adding...' : 'Add Service'}
-            </button>
-            <button 
-              type="button" 
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded shadow hover:bg-gray-400 transition" 
-              onClick={handleFinish}
-            >
-              Finish
-            </button>
-          </div>
-        </form>
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Added Services</h2>
-          <ul className="bg-white rounded-lg shadow p-4">
-            {addedServices.length === 0 && (
-              <li className="text-gray-500 italic">No services added yet. Add at least one service to continue.</li>
-            )}
-            {addedServices.map(s => (
-              <li key={s.id} className="mb-2 pb-2 border-b flex items-center justify-between">
+      <div className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-6 md:py-12 pb-20">
+        <div className="max-w-3xl mx-auto">
+          <LogoHeader />
+          <Stepper />
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 animate-fade-in">
+            <div className="space-y-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-primary">Add Your Services</h2>
+              <p className="text-gray-600">Add the services you offer to clients</p>
+              
+              <form onSubmit={handleAddService} className="bg-gray-50 p-4 rounded-lg space-y-4">
                 <div>
-                  <span className="font-medium">{s.serviceName}</span> - ₹{s.price}
-                  <p className="text-sm text-gray-600">{s.description}</p>
+                  <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Service Name
+                  </label>
+                  <input
+                    type="text"
+                    id="serviceName"
+                    value={serviceName}
+                    onChange={(e) => setServiceName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                    placeholder="e.g. Private Dinner, Cooking Class"
+                    required
+                  />
                 </div>
-                <button 
-                  className="ml-2 text-red-500 hover:text-red-700 hover:underline text-sm" 
-                  onClick={() => handleRemoveService(s.id)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
+                
+                <div>
+                  <label htmlFor="serviceDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    id="serviceDescription"
+                    value={serviceDescription}
+                    onChange={(e) => setServiceDescription(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                    rows={3}
+                    placeholder="Describe your service"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="servicePrice" className="block text-sm font-medium text-gray-700 mb-1">
+                    Price (₹)
+                  </label>
+                  <input
+                    type="number"
+                    id="servicePrice"
+                    value={servicePrice}
+                    onChange={(e) => setServicePrice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Price"
+                    min="0"
+                    required
+                  />
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                    disabled={loading}
+                  >
+                    {loading ? 'Adding...' : 'Add Service'}
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    onClick={handleFinish}
+                    disabled={addedServices.length === 0}
+                  >
+                    {addedServices.length === 0 ? 'Add at least one service' : 'Continue to Summary'}
+                  </button>
+                </div>
+                
+                {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+              </form>
+              
+              {addedServices.length > 0 && (
+                <div className="space-y-4 mt-6">
+                  <h3 className="text-lg font-semibold">Your Added Services</h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    {addedServices.map((service) => (
+                      <div key={service.id} className="bg-gray-50 p-4 rounded-lg relative">
+                        <button
+                          onClick={() => handleRemoveService(service.id)}
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                          aria-label="Remove service"
+                        >
+                          ×
+                        </button>
+                        <h4 className="font-semibold text-primary">{service.serviceName}</h4>
+                        <p className="text-gray-600 text-sm mb-2">{service.description}</p>
+                        <p className="font-bold">₹{service.price}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container max-w-lg mx-auto py-8">
-      <LogoHeader />
-      <Stepper />
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Full Name</label>
-          <input 
-            className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-800" 
-            value={user.fullName || ''} 
-            disabled 
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Bio</label>
-          <textarea 
-            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-            value={bio} 
-            onChange={e => setBio(e.target.value)} 
-            required 
-            rows={4}
-            placeholder="Tell us about yourself and your cooking style..."
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Location</label>
-          <input 
-            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-            value={location} 
-            onChange={e => setLocation(e.target.value)} 
-            required 
-            placeholder="City, State"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Experience (years)</label>
-          <input 
-            type="number" 
-            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-            value={experience} 
-            onChange={e => setExperience(e.target.value)} 
-            required 
-            min="0"
-            placeholder="Years of cooking experience"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Phone Number</label>
-          <input 
-            className="w-full border rounded px-3 py-2 bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary" 
-            value={phoneNumber} 
-            onChange={e => setPhoneNumber(e.target.value)} 
-            required 
-            placeholder="Contact number"
-            type="tel"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium text-gray-700">Profile Image</label>
-          <input 
-            type="file" 
-            accept="image/*" 
-            onChange={e => setProfileImage(e.target.files?.[0] || null)} 
-            className="w-full border rounded px-3 py-2 bg-white text-gray-800"
-          />
-          {imageUploading && (
-            <div className="mt-2">
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-primary h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+    <div className="min-h-screen bg-background px-4 sm:px-6 md:px-8 py-6 md:py-12 pb-20">
+      <div className="max-w-3xl mx-auto">
+        <LogoHeader />
+        <Stepper />
+        
+        {alreadyChef ? (
+          <div className="flex flex-col items-center justify-center min-h-[50vh] bg-white rounded-xl shadow-lg p-6 animate-fade-in">
+            <div className="text-2xl font-bold text-primary mb-4">You are already a chef!</div>
+            <div className="text-lg text-gray-600">Redirecting to your dashboard...</div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 animate-fade-in">
+            {step === 0 && (
+              <div className="space-y-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-primary">Chef Profile</h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-4">
+                    <div className="flex flex-col items-center mb-6">
+                      <div 
+                        className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden mb-3 border-2 border-primary relative"
+                        style={{
+                          backgroundImage: profileImageUrl ? `url(${profileImageUrl})` : 'none',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
+                        }}
+                      >
+                        {!profileImageUrl && <span className="text-gray-400">Photo</span>}
+                        {imageUploading && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div className="text-white text-sm font-semibold">{uploadProgress}%</div>
+                          </div>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        id="profileImage"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setProfileImage(e.target.files[0]);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="profileImage"
+                        className="text-sm text-primary font-medium cursor-pointer hover:underline"
+                      >
+                        {profileImageUrl ? 'Change Photo' : 'Upload Photo'}
+                      </label>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                          Location
+                        </label>
+                        <input
+                          type="text"
+                          id="location"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                          placeholder="City, State"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">
+                          Years of Experience
+                        </label>
+                        <input
+                          type="number"
+                          id="experience"
+                          value={experience}
+                          onChange={(e) => setExperience(e.target.value)}
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                          placeholder="Years"
+                          min="0"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        id="phoneNumber"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                        placeholder="Your phone number"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                        Bio
+                      </label>
+                      <textarea
+                        id="bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                        rows={4}
+                        placeholder="Tell us about yourself, your cooking style, and specialties"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors w-full sm:w-auto"
+                      disabled={loading || !profileImage}
+                    >
+                      {loading ? 'Saving...' : 'Continue to Services'}
+                    </button>
+                  </div>
+                  
+                  {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+                </form>
               </div>
-              <p className="text-sm text-gray-600 mt-1">Uploading image... {uploadProgress}%</p>
-            </div>
-          )}
-          {profileImageUrl && (
-            <div className="mt-2 flex justify-center">
-              <img src={profileImageUrl} alt="Preview" className="h-24 w-24 rounded-full object-cover border-2 border-primary shadow" />
-            </div>
-          )}
-        </div>
-        {error && <div className="text-red-600 font-medium">{error}</div>}
-        <button 
-          type="submit" 
-          className="px-4 py-2 bg-primary text-white rounded w-full shadow-lg hover:bg-primary/90 transition" 
-          disabled={loading}
-        >
-          {loading ? 'Registering...' : 'Register as Chef'}
-        </button>
-      </form>
+            )}
+            
+            {step === 1 && (
+              <div className="space-y-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-primary">Your Services</h2>
+                <p className="text-gray-600">Add the services you offer to clients</p>
+                
+                {addedServices.length > 0 && (
+                  <div className="space-y-4 mb-6">
+                    <h3 className="text-lg font-semibold">Your Added Services</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      {addedServices.map((service) => (
+                        <div key={service.id} className="bg-gray-50 p-4 rounded-lg relative">
+                          <button
+                            onClick={() => handleRemoveService(service.id)}
+                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                            aria-label="Remove service"
+                          >
+                            ×
+                          </button>
+                          <h4 className="font-semibold text-primary">{service.name}</h4>
+                          <p className="text-gray-600 text-sm mb-2">{service.description}</p>
+                          <p className="font-bold">₹{service.price}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {showServiceForm ? (
+                  <form onSubmit={handleAddService} className="bg-gray-50 p-4 rounded-lg space-y-4">
+                    <div>
+                      <label htmlFor="serviceName" className="block text-sm font-medium text-gray-700 mb-1">
+                        Service Name
+                      </label>
+                      <input
+                        type="text"
+                        id="serviceName"
+                        value={serviceName}
+                        onChange={(e) => setServiceName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                        placeholder="e.g. Private Dinner, Cooking Class"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="serviceDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        id="serviceDescription"
+                        value={serviceDescription}
+                        onChange={(e) => setServiceDescription(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                        rows={3}
+                        placeholder="Describe your service"
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="servicePrice" className="block text-sm font-medium text-gray-700 mb-1">
+                        Price (₹)
+                      </label>
+                      <input
+                        type="number"
+                        id="servicePrice"
+                        value={servicePrice}
+                        onChange={(e) => setServicePrice(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 bg-white"
+                        placeholder="Price"
+                        min="0"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowServiceForm(false)}
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+                      >
+                        Add Service
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <button
+                    onClick={() => setShowServiceForm(true)}
+                    className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-primary hover:text-primary flex items-center justify-center"
+                  >
+                    <span className="mr-2">+</span> Add a Service
+                  </button>
+                )}
+                
+                <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors"
+                    disabled={addedServices.length === 0}
+                  >
+                    Continue to Summary
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {step === 2 && (
+              <div className="space-y-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-primary">Summary</h2>
+                <div className="space-y-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg mb-3">Profile</h3>
+                    <div className="flex items-center gap-4 mb-4">
+                      {profileImageUrl && (
+                        <img src={profileImageUrl} alt="Profile" className="w-16 h-16 rounded-full object-cover" />
+                      )}
+                      <div>
+                        <p className="font-medium">{user?.fullName}</p>
+                        <p className="text-gray-600 text-sm">{location}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Experience</p>
+                        <p className="text-gray-900">{experience} years</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Phone</p>
+                        <p className="text-gray-900">{phoneNumber}</p>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-500">Bio</p>
+                      <p className="text-sm text-gray-900">{bio}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-lg mb-3">Services ({addedServices.length})</h3>
+                    <div className="space-y-3">
+                      {addedServices.map((service) => (
+                        <div key={service.id} className="border-b border-gray-200 pb-3 last:border-0 last:pb-0">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium text-gray-900">{service.name}</h4>
+                            <p className="font-bold text-gray-900">₹{service.price}</p>
+                          </div>
+                          <p className="text-sm text-gray-600">{service.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleFinish}
+                    className="px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors"
+                  >
+                    Complete Registration
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {showSummary && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Registration Complete!</h3>
+                    <p className="text-gray-600 mb-6">You are now registered as a chef on ShefMate. Start receiving orders and grow your culinary business!</p>
+                    <button
+                      onClick={handleGoToDashboard}
+                      className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors"
+                    >
+                      Go to Dashboard
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

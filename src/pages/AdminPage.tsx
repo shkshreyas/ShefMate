@@ -78,10 +78,10 @@ export default function AdminPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Admin Login</CardTitle>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md rounded-xl shadow-lg">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl sm:text-2xl">Admin Login</CardTitle>
             <CardDescription>Enter your credentials to access the admin dashboard</CardDescription>
           </CardHeader>
           <CardContent>
@@ -93,6 +93,7 @@ export default function AdminPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter username"
+                  className="h-11"
                 />
               </div>
               <div className="space-y-2">
@@ -103,6 +104,7 @@ export default function AdminPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
+                  className="h-11"
                 />
               </div>
               {error && <div className="text-red-600 text-sm">{error}</div>}
@@ -110,7 +112,7 @@ export default function AdminPage() {
           </CardContent>
           <CardFooter>
             <Button 
-              className="w-full bg-primary hover:bg-primary/90" 
+              className="w-full bg-primary hover:bg-primary/90 h-11" 
               onClick={handleLogin}
             >
               Login
@@ -122,89 +124,133 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <div className="container mx-auto py-6 px-4 pb-20 md:pb-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Admin Dashboard</h1>
       
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Orders Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Total Orders</CardTitle>
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">Orders Overview</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Total Orders</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{orders.length}</p>
+            <CardContent className="pb-3 pt-0 px-3">
+              <p className="text-2xl font-bold">{orders.length}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Pending</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{orders.filter(o => o.status === 'pending').length}</p>
+            <CardContent className="pb-3 pt-0 px-3">
+              <p className="text-2xl font-bold">{orders.filter(o => o.status === 'pending').length}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Completed</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{orders.filter(o => o.status === 'completed').length}</p>
+            <CardContent className="pb-3 pt-0 px-3">
+              <p className="text-2xl font-bold">{orders.filter(o => o.status === 'completed').length}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Cancelled</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
+              <CardTitle className="text-sm sm:text-lg">Cancelled</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{orders.filter(o => o.status === 'cancelled').length}</p>
+            <CardContent className="pb-3 pt-0 px-3">
+              <p className="text-2xl font-bold">{orders.filter(o => o.status === 'cancelled').length}</p>
             </CardContent>
           </Card>
         </div>
       </div>
       
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">All Orders</h2>
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">All Orders</h2>
         
         {loading ? (
           <div className="text-center py-8">Loading orders...</div>
         ) : orders.length === 0 ? (
           <div className="text-center py-8 text-gray-500">No orders found</div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Customer Phone</TableHead>
-                  <TableHead>Chef</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Location</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map(order => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.id.substring(0, 8)}</TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell>{order.userName}</TableCell>
-                    <TableCell>{order.customerMobile}</TableCell>
-                    <TableCell>{order.chefName}</TableCell>
-                    <TableCell>{order.serviceName}</TableCell>
-                    <TableCell>{formatDate(order.orderDate)}</TableCell>
-                    <TableCell>{formatTime(order.orderTime)}</TableCell>
-                    <TableCell>₹{order.price}</TableCell>
-                    <TableCell className="max-w-xs truncate">{order.orderLocation}</TableCell>
+          <>
+            {/* Desktop view - table */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Chef</TableHead>
+                    <TableHead>Service</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Price</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {orders.map(order => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium">{order.id.substring(0, 8)}</TableCell>
+                      <TableCell>{getStatusBadge(order.status)}</TableCell>
+                      <TableCell>{order.userName}</TableCell>
+                      <TableCell>{order.chefName}</TableCell>
+                      <TableCell>{order.serviceName}</TableCell>
+                      <TableCell>{formatDate(order.orderDate)}</TableCell>
+                      <TableCell>₹{order.price}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            
+            {/* Mobile view - cards */}
+            <div className="md:hidden space-y-4">
+              {orders.map(order => (
+                <Card key={order.id} className="overflow-hidden border-0 shadow-md">
+                  <CardHeader className="pb-2 bg-gray-50">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <CardTitle className="text-sm">Order #{order.id.substring(0, 8)}</CardTitle>
+                        <CardDescription>{formatDate(order.orderDate)}</CardDescription>
+                      </div>
+                      {getStatusBadge(order.status)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                      <div>
+                        <p className="text-gray-500">Customer</p>
+                        <p className="font-medium">{order.userName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Chef</p>
+                        <p className="font-medium">{order.chefName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Service</p>
+                        <p>{order.serviceName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Price</p>
+                        <p className="font-medium">₹{order.price}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Location</p>
+                        <p className="truncate">{order.orderLocation}</p>
+                      </div>
+                      {order.customerMobile && (
+                        <div className="col-span-2">
+                          <p className="text-gray-500">Phone</p>
+                          <p>{order.customerMobile}</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

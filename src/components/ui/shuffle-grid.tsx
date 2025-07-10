@@ -15,6 +15,14 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
   const handleBookClick = () => {
     navigate('/become-chef');
   };
+
+  const handleBookNowClick = () => {
+    if (onBookClick) {
+      onBookClick();
+    } else {
+      navigate('/chefs');
+    }
+  };
   
   return (
     <section className="w-full px-8 py-12 grid grid-cols-1 md:grid-cols-2 items-center gap-8 max-w-6xl mx-auto min-h-screen">
@@ -23,23 +31,26 @@ export const ShuffleHero = ({ onBookClick }: ShuffleHeroProps) => {
           Welcome to ShefMate
         </span>
         <h3 className="text-4xl md:text-6xl font-serif font-bold text-foreground">
-          Your Personal Shef Buddy
+          Your Personal <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Shef</span> Buddy
         </h3>
         <p className="text-base md:text-lg text-muted-foreground my-4 md:my-6">
           Experience personalized culinary excellence with our on-demand shef service. 
           Let professional shefs bring restaurant-quality dining to your home.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button onClick={handleBookClick} className="z-10 font-medium text-base px-4">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start items-center">
+          <Button 
+            onClick={handleBookClick} 
+            className="z-10 font-medium text-base px-6 py-6 sm:py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
+          >
             Register as chef
           </Button>
-          <a 
-            href="https://forms.gle/Enr5dM5WdB5Q2XPn9"
-            className="relative inline-flex items-center justify-center font-medium py-2 px-4 rounded-md transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer overflow-hidden group z-10"
+          <Button 
+            onClick={handleBookNowClick}
+            className="relative inline-flex items-center justify-center font-medium py-6 sm:py-2 px-6 rounded-lg transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer overflow-hidden group z-10 w-full sm:w-auto"
           >
             <span className="absolute inset-0 w-full h-full transition-all duration-300 ease-out bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 group-hover:scale-110"></span>
             <span className="relative text-white font-medium">Book Now</span>
-          </a>
+          </Button>
         </div>
       </div>
       <ShuffleGrid />
@@ -137,7 +148,7 @@ const generateSquares = () => {
       key={sq.id}
       layout
       transition={{ duration: 1.5, type: "spring" }}
-      className="w-full h-full rounded-md overflow-hidden bg-muted"
+      className="w-full h-full rounded-lg overflow-hidden bg-muted shadow-md"
       style={{
         backgroundImage: `url(${sq.src})`,
         backgroundSize: "cover",
@@ -168,7 +179,7 @@ const ShuffleGrid = () => {
   };
 
   return (
-    <div className="grid grid-cols-4 grid-rows-4 h-[450px] gap-1">
+    <div className="grid grid-cols-4 grid-rows-4 h-[450px] gap-2">
       {squares.map((sq) => sq)}
     </div>
   );

@@ -1,3 +1,4 @@
+# ShefMate Robots.txt
 # Allow all crawlers
 User-agent: *
 Allow: /
@@ -10,6 +11,12 @@ Disallow: /admin/
 Disallow: /private/
 Disallow: /api/
 Disallow: /dashboard/
+Disallow: /chef-dashboard/
+Disallow: /_/
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /dist/
+Disallow: /build/
 
 # Allow specific important pages
 Allow: /help
@@ -20,6 +27,55 @@ Allow: /contact
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /cookie-policy
+Allow: /learn
+Allow: /become-chef
+Allow: /orders
 
-# Crawl-delay for all bots
-Crawl-delay: 10 
+# Allow cuisine and location filters
+Allow: /chefs?cuisine=
+Allow: /chefs?location=
+Allow: /chefs?dietary=
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 10
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 10
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Crawl-delay for all other bots
+Crawl-delay: 10
+
+# Host directive
+Host: https://shefmate.com 

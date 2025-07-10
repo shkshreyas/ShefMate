@@ -87,11 +87,11 @@ export default function CustomerOrdersPage() {
   const cancelledOrders = orders.filter(order => order.status === 'cancelled');
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">My Orders</h1>
+    <div className="container mx-auto py-6 px-4 pb-20 md:pb-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">My Orders</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-8">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
           <TabsTrigger value="pending" className="relative">
             Pending
             {pendingOrders.length > 0 && (
@@ -100,7 +100,7 @@ export default function CustomerOrdersPage() {
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="accepted">
+          <TabsTrigger value="accepted" className="relative">
             Accepted
             {acceptedOrders.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -114,7 +114,7 @@ export default function CustomerOrdersPage() {
         
         <TabsContent value="pending" className="space-y-4">
           {pendingOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
               <p className="text-lg mb-4">No pending orders</p>
               <Button onClick={() => navigate('/chefs')} className="bg-primary hover:bg-primary/90">
                 Browse Chefs
@@ -132,7 +132,9 @@ export default function CustomerOrdersPage() {
         
         <TabsContent value="accepted" className="space-y-4">
           {acceptedOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No accepted orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No accepted orders</p>
+            </div>
           ) : (
             acceptedOrders.map(order => (
               <OrderCard 
@@ -145,7 +147,9 @@ export default function CustomerOrdersPage() {
         
         <TabsContent value="completed" className="space-y-4">
           {completedOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No completed orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No completed orders</p>
+            </div>
           ) : (
             completedOrders.map(order => (
               <OrderCard 
@@ -158,7 +162,9 @@ export default function CustomerOrdersPage() {
         
         <TabsContent value="cancelled" className="space-y-4">
           {cancelledOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No cancelled orders</div>
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <p className="text-gray-500">No cancelled orders</p>
+            </div>
           ) : (
             cancelledOrders.map(order => (
               <OrderCard 
@@ -189,67 +195,70 @@ function OrderCard({ order }: { order: any }) {
     }
   };
 
-  // Use formatted date if available, otherwise try to format from Timestamp
-  const displayDate = order.formattedDate || (order.orderDate ? 
-    (order.orderDate.toDate ? 
-      order.orderDate.toDate().toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }) 
-      : new Date(order.orderDate).toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }))
-    : 'Unknown date');
+  // Format date properly
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
   
   // Display the time - could be a string or could need formatting
-  const displayTime = order.orderTime || 'Unknown time';
+  const displayTime = order.orderTime || 'N/A';
 
   return (
-    <Card className="w-full hover:shadow-md transition-shadow duration-200">
-      <CardHeader>
-        <div className="flex justify-between items-start">
+    <Card className="overflow-hidden border-0 shadow-md rounded-xl">
+      <CardHeader className="pb-2 bg-gray-50">
+        <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Order #{order.id.substring(0, 8)}</CardTitle>
+            <CardTitle className="text-base sm:text-lg">Order #{order.id.substring(0, 8)}</CardTitle>
             <CardDescription>
-              {displayDate} at {displayTime}
+              {formatDate(order.orderDate)} at {displayTime}
             </CardDescription>
           </div>
           {getStatusBadge(order.status)}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-700">Chef:</span> 
-            <span className="text-primary font-medium">{order.chefName}</span>
+      <CardContent className="pt-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div>
+            <p className="text-gray-500">Chef</p>
+            <p className="font-medium text-primary">{order.chefName}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Service:</span> {order.serviceName}
+            <p className="text-gray-500">Price</p>
+            <p className="font-medium">₹{order.price}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Location:</span> {order.orderLocation}
+            <p className="text-gray-500">Service</p>
+            <p>{order.serviceName}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-700">Duration:</span> {order.duration} hour(s)
+            <p className="text-gray-500">Duration</p>
+            <p>{order.duration || 'N/A'} hour(s)</p>
+          </div>
+          <div className="col-span-2">
+            <p className="text-gray-500">Location</p>
+            <p className="truncate">{order.orderLocation}</p>
           </div>
           {order.foodPreference && (
-            <div>
-              <span className="font-medium text-gray-700">Food Preference:</span> {order.foodPreference}
+            <div className="col-span-2">
+              <p className="text-gray-500">Food Preference</p>
+              <p>{order.foodPreference}</p>
             </div>
           )}
-          <div>
-            <span className="font-medium text-gray-700">Price:</span> ₹{order.price}
-          </div>
         </div>
       </CardContent>
-      {order.status === 'accepted' && (
-        <CardFooter>
-          <Button onClick={() => window.open(`tel:${order.chefPhone || ''}`)}>
+      {order.status === 'accepted' && order.chefPhone && (
+        <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-4 bg-gray-50">
+          <Button 
+            onClick={() => window.open(`tel:${order.chefPhone}`)}
+            size="sm"
+            className="text-sm"
+          >
             Contact Chef
           </Button>
         </CardFooter>
