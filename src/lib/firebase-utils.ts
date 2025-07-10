@@ -308,58 +308,177 @@ export const getAllOrders = async () => {
 // Image operations
 export async function uploadImage(file: File, path: string): Promise<string> {
   try {
-    // Use external image hosting service
-    const imageUrl = await uploadImageToExternalService(file);
-    return imageUrl;
+    console.log('Starting image upload process with file:', file.name, 'Size:', Math.round(file.size / 1024), 'KB');
+    
+    // Try multiple image hosting services with fallbacks
+    try {
+      // First attempt: ImgBB
+      console.log('Attempting upload to ImgBB...');
+      const imageUrl = await uploadToImgBB(file);
+      console.log('ImgBB upload succeeded');
+      return imageUrl;
+    } catch (error) {
+      console.error('ImgBB upload failed with error:', error);
+      console.log('Trying Cloudinary fallback...');
+      
+      // Second attempt: Free Cloudinary
+      try {
+        const cloudinaryUrl = await uploadToCloudinary(file);
+        console.log('Cloudinary upload succeeded');
+        return cloudinaryUrl;
+      } catch (cloudinaryError) {
+        console.error('Cloudinary upload failed with error:', cloudinaryError);
+        console.log('Trying Imgur fallback...');
+        
+        // Third attempt: Imgur
+        try {
+          const imgurUrl = await uploadToImgur(file);
+          console.log('Imgur upload succeeded');
+          return imgurUrl;
+        } catch (imgurError) {
+          console.error('Imgur upload failed with error:', imgurError);
+          throw new Error('All image upload services failed');
+        }
+      }
+    }
   } catch (error) {
     console.error("Error uploading image:", error);
-    throw error;
+    throw new Error("All image upload services failed. Please try again later.");
   }
 }
 
-// Upload to a free image hosting service
-async function uploadImageToExternalService(imageFile: File): Promise<string> {
+// ImgBB upload (free)
+async function uploadToImgBB(imageFile: File): Promise<string> {
+  console.log('Starting ImgBB upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+  
+  // Create a FormData object to send the file
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  
+  // Use ImgBB free API with the provided API key
+  const apiKey = 'b9409d197d650cf07172a9814f0b19b9';
+  const apiUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
+  
+  console.log('Sending request to ImgBB at:', apiUrl);
+  
   try {
-    console.log('Starting image upload, file size:', Math.round(imageFile.size / 1024), 'KB');
-    
-    // Create a FormData object to send the file
-    const formData = new FormData();
-    formData.append('image', imageFile);
-    
-    // Use ImgBB free API
-    const apiUrl = 'https://api.imgbb.com/1/upload?key=f1c7fb499c2f3a6c5966b48318d97ff7';
-    console.log('Uploading to:', apiUrl);
-    
     const response = await fetch(apiUrl, {
       method: 'POST',
       body: formData,
     });
     
-    console.log('Response status:', response.status);
+    console.log('ImgBB response status:', response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Upload failed with status:', response.status, errorText);
-      throw new Error(`Upload failed with status: ${response.status} - ${errorText}`);
+      console.error('ImgBB error response:', errorText);
+      throw new Error(`ImgBB upload failed with status: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
-    console.log('Upload response:', data);
+    console.log('ImgBB response data received');
     
     if (data.success) {
-      console.log('Image uploaded successfully, URL:', data.data.url);
-      return data.data.url;
+      // ImgBB provides different URL options, using display_url for better quality
+      console.log('ImgBB upload successful');
+      console.log('Image URL:', data.data.display_url);
+      console.log('Thumbnail URL:', data.data.thumb.url);
+      console.log('Delete URL:', data.data.delete_url);
+      
+      // Return the display URL which is typically best quality
+      return data.data.display_url;
     } else {
-      console.error('Image upload failed with response:', data);
-      throw new Error('Image upload failed: ' + (data.error?.message || 'Unknown error'));
+      console.error('ImgBB reported failure:', data);
+      throw new Error('ImgBB upload failed: ' + (data.error?.message || 'Unknown error'));
     }
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error('Error in ImgBB upload function:', error);
     throw error;
   }
 }
 
+// Cloudinary upload (free tier)
+async function uploadToCloudinary(imageFile: File): Promise<string> {
+  console.log('Starting Cloudinary upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+  
+  // Create a FormData object to send the file
+  const formData = new FormData();
+  formData.append('file', imageFile);
+  
+  // Using a public upload preset that doesn't require authentication
+  formData.append('upload_preset', 'docs_upload_example_us_preset');
+  
+  // Public demo cloud name for testing purposes
+  const cloudName = 'demo';
+  const apiUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+  
+  console.log('Sending request to Cloudinary');
+  
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log('Cloudinary response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Cloudinary error response:', errorText);
+      throw new Error(`Cloudinary upload failed with status: ${response.status} - ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Cloudinary response data received:', data);
+    
+    if (data.secure_url) {
+      console.log('Cloudinary upload successful, URL:', data.secure_url);
+      return data.secure_url;
+    } else {
+      console.error('Cloudinary failed to return a secure URL:', data);
+      throw new Error('Cloudinary upload failed: No secure URL in response');
+    }
+  } catch (error) {
+    console.error('Error in Cloudinary upload function:', error);
+    throw error;
+  }
+}
+
+// Imgur upload (free)
+async function uploadToImgur(imageFile: File): Promise<string> {
+  console.log('Starting Imgur upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+  
+  // Create a FormData object to send the file
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  
+  // Replace with your Imgur client ID - Get one at https://api.imgur.com/oauth2/addclient
+  const clientId = '546c25a59c58ad7';
+  
+  const response = await fetch('https://api.imgur.com/3/image', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Authorization': `Client-ID ${clientId}`
+    }
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Imgur upload failed with status: ${response.status} - ${errorText}`);
+  }
+  
+  const data = await response.json();
+  
+  if (data.success) {
+    console.log('Imgur upload successful, URL:', data.data.link);
+    return data.data.link;
+  } else {
+    throw new Error('Imgur upload failed: ' + (data.data?.error || 'Unknown error'));
+  }
+}
+
 export async function deleteImage(path: string) {
-  // No need to delete from Firebase Storage anymore
+  // Images on free hosting services typically can't be deleted via API
   return { success: true };
 } 

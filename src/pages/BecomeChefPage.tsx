@@ -144,22 +144,115 @@ export default function BecomeChefPage() {
   // Upload image directly to external service instead of Firebase Storage
   async function uploadProfileImage(file: File): Promise<string> {
     try {
-      // Compress image first
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 800,
-        useWebWorker: true,
-      });
+      console.log('Beginning image compression and upload process...');
+      console.log('Original file:', file.name, 'Type:', file.type, 'Size:', Math.round(file.size / 1024), 'KB');
+      
+      let compressedFile = file;
+      
+      // Only compress if it's a large image (over 500KB)
+      if (file.size > 500 * 1024) {
+        try {
+          // Compress image with more conservative settings
+          compressedFile = await imageCompression(file, {
+            maxSizeMB: 0.5, // Reduce max size to ensure smaller file
+            maxWidthOrHeight: 800,
+            useWebWorker: true,
+            initialQuality: 0.7, // Slightly reduce quality to ensure size reduction
+          });
+          
+          console.log('Compression successful:', 
+            'Original:', Math.round(file.size / 1024), 'KB', 
+            'Compressed:', Math.round(compressedFile.size / 1024), 'KB');
+        } catch (compressionError) {
+          console.error('Image compression failed:', compressionError);
+          console.log('Proceeding with original file');
+          compressedFile = file; // Fall back to original file if compression fails
+        }
+      } else {
+        console.log('Image is already small enough, skipping compression');
+      }
+      
+      // Convert to different format if needed (sometimes helps with upload issues)
+      if (file.type === 'image/png' && file.size > 1000 * 1024) {
+        try {
+          console.log('Attempting to convert PNG to JPEG to reduce size');
+          compressedFile = await convertToJpeg(compressedFile);
+          console.log('Conversion successful, new size:', Math.round(compressedFile.size / 1024), 'KB');
+        } catch (conversionError) {
+          console.error('Format conversion failed:', conversionError);
+          // Continue with the original compressed file
+        }
+      }
+      
+      // If still too large after compression, show error
+      if (compressedFile.size > 2000 * 1024) {
+        throw new Error('Image is too large. Please select a smaller image (under 2MB).');
+      }
       
       // Use the utility function to upload to external service
+      console.log('Starting upload of prepared file:', compressedFile.size / 1024, 'KB');
       const imageUrl = await uploadImage(compressedFile, ''); // Path parameter is ignored now
+      console.log('Upload completed successfully, URL:', imageUrl);
       return imageUrl;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error in uploadProfileImage:', error);
       throw error;
     }
   }
-
+  
+  // Helper function to convert image to JPEG format
+  async function convertToJpeg(file: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              reject(new Error('Could not get canvas context'));
+              return;
+            }
+            
+            // Draw image on canvas with white background (for transparent PNGs)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            // Convert to JPEG data URL
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error('Canvas to Blob conversion failed'));
+                return;
+              }
+              
+              // Create a new file with JPEG mime type
+              const newFile = new File([blob], file.name.replace(/\.(png|gif|jpeg|jpg)$/i, '.jpg'), {
+                type: 'image/jpeg',
+                lastModified: new Date().getTime()
+              });
+              
+              resolve(newFile);
+            }, 'image/jpeg', 0.85);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = () => {
+          reject(new Error('Failed to load image'));
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -194,9 +287,18 @@ export default function BecomeChefPage() {
         
         setUploadProgress(100);
         setImageUploading(false);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Image upload error:', err);
-        setError('Image upload failed. Please try again later.');
+        
+        // More descriptive error message
+        if (err.message && err.message.includes('too large')) {
+          setError(err.message);
+        } else if (err.message && err.message.includes('format')) {
+          setError('Image format not supported. Please try a JPEG or PNG image.');
+        } else {
+          setError('Image upload failed. Please try again with a smaller image (under 1MB).');
+        }
+        
         setLoading(false);
         setImageUploading(false);
         return;
