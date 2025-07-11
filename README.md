@@ -2,26 +2,113 @@
 
 ShefMate is a platform that connects customers with professional chefs for personalized cooking experiences.
 
-## Image Upload Configuration
+## Enhanced Image Upload System
 
-This application uses free image hosting services for storing profile images and other media.
+This application uses a robust multi-service image upload system with parallel uploads and automatic fallbacks for maximum reliability.
 
-### ImgBB (Primary)
+### How It Works
 
-This app is currently using a free ImgBB API key:
+The system attempts to upload images to **5 different free image hosting services simultaneously**:
 
+1. **ImgBB** (Primary)
+2. **Cloudinary** (Fallback 1)
+3. **Imgur** (Fallback 2)
+4. **FreeImage.host** (Fallback 3)
+5. **PostImages.cc** (Fallback 4)
+
+**Benefits:**
+
+- **Parallel uploads**: All services are tried simultaneously for faster results
+- **Automatic fallback**: If one service fails, others continue
+- **High reliability**: Multiple services ensure uploads rarely fail
+- **No single point of failure**: If one service is down, others still work
+
+### Service Configuration
+
+#### ImgBB (Primary)
+
+- **API Key**: `b9409d197d650cf07172a9814f0b19b9`
+- **Status**: Active and configured
+- **Features**: High quality images, thumbnails, delete URLs
+
+#### Cloudinary (Fallback 1)
+
+- **Cloud Name**: `dcb3ssrse`
+- **API Key**: `456884833162782`
+- **Upload Preset**: `ml_default`
+- **Status**: Active and configured
+- **Features**: Image transformations, CDN delivery
+
+#### Imgur (Fallback 2)
+
+- **Client ID**: `546c25a59c58ad7`
+- **Status**: Active and configured
+- **Features**: Community features, direct links
+
+#### FreeImage.host (Fallback 3)
+
+- **API Key**: `6d207e02198a847aa98d0a2a901485a5`
+- **Status**: Active and configured
+- **Features**: Simple API, reliable hosting
+
+#### PostImages.cc (Fallback 4)
+
+- **Status**: Active and configured
+- **Features**: No API key required, simple upload
+
+### Technical Implementation
+
+The upload system is implemented in two files:
+
+- `src/lib/firebase-utils.ts` - Main upload function with Firebase integration
+- `src/lib/uploadImage.ts` - Standalone upload function
+
+**Key Features:**
+
+- Parallel upload attempts using `Promise.allSettled()`
+- Comprehensive error logging for debugging
+- Automatic service selection (first successful upload wins)
+- Detailed console logging for monitoring
+
+### Usage
+
+```javascript
+import { uploadImage } from "@/lib/firebase-utils";
+
+// Upload an image file
+const imageUrl = await uploadImage(file, "path/optional");
+console.log("Uploaded image URL:", imageUrl);
 ```
-b9409d197d650cf07172a9814f0b19b9
-```
 
-If you need to get your own API key (recommended for production):
+### Error Handling
+
+If all services fail, the system:
+
+1. Logs detailed error information for each service
+2. Throws a user-friendly error message
+3. Provides debugging information in the console
+
+### Monitoring
+
+The system provides extensive logging:
+
+- File size and type information
+- Upload progress for each service
+- Success/failure status for each service
+- Final selected image URL
+
+### Getting Your Own API Keys (Optional)
+
+For production use, you may want to get your own API keys:
+
+#### ImgBB
 
 1. Go to [ImgBB](https://api.imgbb.com/)
 2. Sign up for a free account
 3. Generate an API key
-4. Replace the `apiKey` value in `src/lib/firebase-utils.ts` in the `uploadToImgBB` function
+4. Replace the `apiKey` value in the upload functions
 
-### Cloudinary (Fallback 1)
+#### Cloudinary
 
 1. Go to [Cloudinary](https://cloudinary.com/)
 2. Sign up for a free account
@@ -32,14 +119,9 @@ If you need to get your own API key (recommended for production):
    - Click "Add upload preset"
    - Set "Signing mode" to "Unsigned"
    - Name it (e.g., "ml_default")
-5. Replace the values in `src/lib/firebase-utils.ts` in the `uploadToCloudinary` function:
+5. Replace the values in the upload functions
 
-```javascript
-formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // Replace with your preset name
-const cloudName = "YOUR_CLOUD_NAME"; // Replace with your cloud name
-```
-
-### Imgur (Fallback 2)
+#### Imgur
 
 1. Go to [Imgur API](https://api.imgur.com/oauth2/addclient)
 2. Sign up for a free account
@@ -47,18 +129,7 @@ const cloudName = "YOUR_CLOUD_NAME"; // Replace with your cloud name
    - Set "OAuth 2 authorization with callback URL" as the authorization type
    - Enter any URL for callback (e.g., https://example.com/callback)
 4. Get your Client ID
-5. Replace the client ID in `src/lib/firebase-utils.ts` in the `uploadToImgur` function:
-
-```javascript
-const clientId = "YOUR_IMGUR_CLIENT_ID"; // Replace with your client ID
-```
-
-## Service Configuration Notes
-
-- The application will try these services in order: ImgBB → Cloudinary → Imgur
-- If one service fails, it will automatically try the next one
-- Free plans have daily/monthly upload limits, so using multiple services provides redundancy
-- For production use, consider using Firebase Storage or a paid image hosting service
+5. Replace the client ID in the upload functions
 
 ## Setting up Firebase
 

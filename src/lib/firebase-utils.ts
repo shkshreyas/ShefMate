@@ -310,40 +310,44 @@ export async function uploadImage(file: File, path: string): Promise<string> {
   try {
     console.log('Starting image upload process with file:', file.name, 'Size:', Math.round(file.size / 1024), 'KB');
     
-    // Try multiple image hosting services with fallbacks
-    try {
-      // First attempt: ImgBB
-      console.log('Attempting upload to ImgBB...');
-      const imageUrl = await uploadToImgBB(file);
-      console.log('ImgBB upload succeeded');
-      return imageUrl;
-    } catch (error) {
-      console.error('ImgBB upload failed with error:', error);
-      console.log('Trying Cloudinary fallback...');
-      
-      // Second attempt: Free Cloudinary
-      try {
-        const cloudinaryUrl = await uploadToCloudinary(file);
-        console.log('Cloudinary upload succeeded');
-        return cloudinaryUrl;
-      } catch (cloudinaryError) {
-        console.error('Cloudinary upload failed with error:', cloudinaryError);
-        console.log('Trying Imgur fallback...');
-        
-        // Third attempt: Imgur
-        try {
-          const imgurUrl = await uploadToImgur(file);
-          console.log('Imgur upload succeeded');
-          return imgurUrl;
-        } catch (imgurError) {
-          console.error('Imgur upload failed with error:', imgurError);
-          throw new Error('All image upload services failed');
-        }
+    // Try multiple image hosting services in parallel for better reliability
+    const uploadPromises = [
+      uploadToImgBB(file).catch(error => ({ service: 'ImgBB', error })),
+      uploadToCloudinary(file).catch(error => ({ service: 'Cloudinary', error })),
+      uploadToImgur(file).catch(error => ({ service: 'Imgur', error })),
+      uploadToFreeImageHost(file).catch(error => ({ service: 'FreeImageHost', error })),
+      uploadToPostImages(file).catch(error => ({ service: 'PostImages', error }))
+    ];
+
+    // Wait for all uploads to complete (success or failure)
+    const results = await Promise.allSettled(uploadPromises);
+    
+    // Find the first successful upload
+    for (const result of results) {
+      if (result.status === 'fulfilled' && typeof result.value === 'string') {
+        console.log('Image upload succeeded with URL:', result.value);
+        return result.value;
       }
     }
+
+    // If all failed, log the errors and throw
+    const errors = results
+      .map((result, index) => {
+        if (result.status === 'rejected') {
+          return `Service ${index + 1}: ${result.reason}`;
+        }
+        if (result.status === 'fulfilled' && typeof result.value === 'object' && 'error' in result.value) {
+          return `${result.value.service}: ${result.value.error}`;
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    console.error('All image upload services failed:', errors);
+    throw new Error('All image upload services failed. Please try again later.');
   } catch (error) {
     console.error("Error uploading image:", error);
-    throw new Error("All image upload services failed. Please try again later.");
+    throw new Error("Image upload failed. Please try again later.");
   }
 }
 
@@ -405,11 +409,11 @@ async function uploadToCloudinary(imageFile: File): Promise<string> {
   const formData = new FormData();
   formData.append('file', imageFile);
   
-  // Using a public upload preset that doesn't require authentication
-  formData.append('upload_preset', 'docs_upload_example_us_preset');
+  // Using the provided Cloudinary credentials
+  formData.append('upload_preset', 'ml_default');
+  formData.append('api_key', '456884833162782');
   
-  // Public demo cloud name for testing purposes
-  const cloudName = 'demo';
+  const cloudName = 'dcb3ssrse';
   const apiUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
   
   console.log('Sending request to Cloudinary');
@@ -475,6 +479,93 @@ async function uploadToImgur(imageFile: File): Promise<string> {
     return data.data.link;
   } else {
     throw new Error('Imgur upload failed: ' + (data.data?.error || 'Unknown error'));
+  }
+}
+
+// FreeImage.host upload (free)
+async function uploadToFreeImageHost(imageFile: File): Promise<string> {
+  console.log('Starting FreeImage.host upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+  
+  // Create a FormData object to send the file
+  const formData = new FormData();
+  formData.append('source', imageFile);
+  formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
+  formData.append('action', 'upload');
+  formData.append('format', 'json');
+  
+  const apiUrl = 'https://freeimage.host/api/1/upload';
+  
+  console.log('Sending request to FreeImage.host');
+  
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log('FreeImage.host response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('FreeImage.host error response:', errorText);
+      throw new Error(`FreeImage.host upload failed with status: ${response.status} - ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log('FreeImage.host response data received:', data);
+    
+    if (data.status_code === 200 && data.success) {
+      console.log('FreeImage.host upload successful, URL:', data.image.url);
+      return data.image.url;
+    } else {
+      console.error('FreeImage.host reported failure:', data);
+      throw new Error('FreeImage.host upload failed: ' + (data.status_txt || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error in FreeImage.host upload function:', error);
+    throw error;
+  }
+}
+
+// PostImages.cc upload (free)
+async function uploadToPostImages(imageFile: File): Promise<string> {
+  console.log('Starting PostImages upload, file size:', Math.round(imageFile.size / 1024), 'KB');
+  
+  // Create a FormData object to send the file
+  const formData = new FormData();
+  formData.append('file', imageFile);
+  
+  const apiUrl = 'https://postimages.org/json/rr';
+  
+  console.log('Sending request to PostImages');
+  
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log('PostImages response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('PostImages error response:', errorText);
+      throw new Error(`PostImages upload failed with status: ${response.status} - ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log('PostImages response data received:', data);
+    
+    if (data.status === 200 && data.url) {
+      console.log('PostImages upload successful, URL:', data.url);
+      return data.url;
+    } else {
+      console.error('PostImages reported failure:', data);
+      throw new Error('PostImages upload failed: ' + (data.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error in PostImages upload function:', error);
+    throw error;
   }
 }
 
