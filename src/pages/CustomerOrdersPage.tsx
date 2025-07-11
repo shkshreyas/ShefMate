@@ -87,29 +87,29 @@ export default function CustomerOrdersPage() {
   const cancelledOrders = orders.filter(order => order.status === 'cancelled');
 
   return (
-    <div className="container mx-auto py-6 px-4 pb-20 md:pb-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">My Orders</h1>
+    <div className="container mx-auto py-4 px-2 sm:px-4 pb-20 md:pb-8">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-6">My Orders</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
-          <TabsTrigger value="pending" className="relative">
+        <TabsList className="mb-3 w-full justify-start overflow-x-auto h-auto p-1 gap-1">
+          <TabsTrigger value="pending" className="relative text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 py-1 sm:py-2">
             Pending
             {pendingOrders.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 {pendingOrders.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="accepted" className="relative">
+          <TabsTrigger value="accepted" className="relative text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 py-1 sm:py-2">
             Accepted
             {acceptedOrders.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 {acceptedOrders.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+          <TabsTrigger value="completed" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 py-1 sm:py-2">Completed</TabsTrigger>
+          <TabsTrigger value="cancelled" className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 py-1 sm:py-2">Cancelled</TabsTrigger>
         </TabsList>
         
         <TabsContent value="pending" className="space-y-4">
@@ -210,23 +210,25 @@ function OrderCard({ order }: { order: any }) {
   const displayTime = order.orderTime || 'N/A';
 
   return (
-    <Card className="overflow-hidden border-0 shadow-md rounded-xl">
-      <CardHeader className="pb-2 bg-gray-50">
-        <div className="flex justify-between items-center">
+    <Card className="overflow-hidden border-0 shadow-md rounded-xl mb-3 sm:mb-4 hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="pb-2 sm:pb-3 bg-gray-50 px-3 sm:px-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div>
-            <CardTitle className="text-base sm:text-lg">Order #{order.id.substring(0, 8)}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-sm sm:text-base md:text-lg">Order #{order.id.substring(0, 8)}</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               {formatDate(order.orderDate)} at {displayTime}
             </CardDescription>
           </div>
-          {getStatusBadge(order.status)}
+          <div className="self-start sm:self-auto">
+            {getStatusBadge(order.status)}
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+      <CardContent className="pt-3 sm:pt-4 px-3 sm:px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm">
           <div>
             <p className="text-gray-500">Chef</p>
-            <p className="font-medium text-primary">{order.chefName}</p>
+            <p className="font-medium text-primary truncate">{order.chefName}</p>
           </div>
           <div>
             <p className="text-gray-500">Price</p>
@@ -234,30 +236,30 @@ function OrderCard({ order }: { order: any }) {
           </div>
           <div>
             <p className="text-gray-500">Service</p>
-            <p>{order.serviceName}</p>
+            <p className="truncate">{order.serviceName}</p>
           </div>
           <div>
             <p className="text-gray-500">Duration</p>
             <p>{order.duration || 'N/A'} hour(s)</p>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-1 sm:col-span-2">
             <p className="text-gray-500">Location</p>
             <p className="truncate">{order.orderLocation}</p>
           </div>
           {order.foodPreference && (
-            <div className="col-span-2">
+            <div className="col-span-1 sm:col-span-2">
               <p className="text-gray-500">Food Preference</p>
-              <p>{order.foodPreference}</p>
+              <p className="truncate">{order.foodPreference}</p>
             </div>
           )}
         </div>
       </CardContent>
       {order.status === 'accepted' && order.chefPhone && (
-        <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-4 bg-gray-50">
+        <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-3 sm:mt-4 bg-gray-50 px-3 sm:px-4">
           <Button 
             onClick={() => window.open(`tel:${order.chefPhone}`)}
             size="sm"
-            className="text-sm"
+            className="text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Contact Chef
           </Button>

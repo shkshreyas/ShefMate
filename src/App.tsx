@@ -25,6 +25,7 @@ import BecomeChefPage from './pages/BecomeChefPage';
 import CustomerOrdersPage from './pages/CustomerOrdersPage';
 import ChefListingPage from './pages/ChefListingPage';
 import AdminPage from './pages/AdminPage';
+import SocialPage from './pages/SocialPage';
 import { Toaster } from '@/components/ui/toaster';
 
 function AppContent() {
@@ -99,7 +100,7 @@ function PageWithHeader({ children, seoConfig }: { children: React.ReactNode; se
     '/chefs',
     '/chefs/',
     '/orders',
-    '/learn',
+    '/social',
     '/about',
     '/services',
     '/contact',
@@ -165,7 +166,8 @@ function App() {
         <Route path="/become-chef" element={<PageWithHeader seoConfig={SEOConfigs.becomeChef}><BecomeChefPage /></PageWithHeader>} />
         <Route path="/orders" element={<PageWithHeader><CustomerOrdersPage /></PageWithHeader>} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/learn" element={<PageWithHeader seoConfig={SEOConfigs.learn}><LearnPage /></PageWithHeader>} />
+        <Route path="/social" element={<PageWithHeader seoConfig={SEOConfigs.learn}><SocialPage /></PageWithHeader>} />
+        <Route path="/social/learn" element={<PageWithHeader seoConfig={SEOConfigs.learn}><LearnPage /></PageWithHeader>} />
         <Route path="/privacy-policy" element={<PageWithHeader><PrivacyPolicyPage /></PageWithHeader>} />
         <Route path="/terms-of-service" element={<PageWithHeader><TermsOfServicePage /></PageWithHeader>} />
         <Route path="/help" element={<PageWithHeader seoConfig={SEOConfigs.help}><HelpCenterPage /></PageWithHeader>} />

@@ -210,23 +210,41 @@ Important: Always prioritize user experience and provide actionable advice.`;
         
         if (data.choices && data.choices[0]?.message) {
           const aiResponse = data.choices[0].message.content;
-          setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+          const cleanResponse = stripMarkdown(aiResponse);
+          setMessages(prev => [...prev, { role: 'assistant', content: cleanResponse }]);
         } else {
           throw new Error('Invalid API response');
         }
       } else {
         // Fallback responses when API key is not available
         const fallbackResponse = generateFallbackResponse(input, userData, currentPath);
-        setMessages(prev => [...prev, { role: 'assistant', content: fallbackResponse }]);
+        const cleanResponse = stripMarkdown(fallbackResponse);
+        setMessages(prev => [...prev, { role: 'assistant', content: cleanResponse }]);
       }
       
     } catch (error) {
       console.error('Error calling AI API:', error);
       const errorResponse = generateFallbackResponse(input, userData, window.location.pathname);
-      setMessages(prev => [...prev, { role: 'assistant', content: errorResponse }]);
+      const cleanResponse = stripMarkdown(errorResponse);
+      setMessages(prev => [...prev, { role: 'assistant', content: cleanResponse }]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Function to strip markdown formatting from text
+  const stripMarkdown = (text: string): string => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold (**text**)
+      .replace(/\*(.*?)\*/g, '$1') // Remove italic (*text*)
+      .replace(/`(.*?)`/g, '$1') // Remove inline code (`text`)
+      .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+      .replace(/#{1,6}\s+/g, '') // Remove headers
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links but keep text
+      .replace(/^\s*[-*+]\s+/gm, '') // Remove list markers
+      .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered list markers
+      .replace(/\n\s*\n/g, '\n') // Remove extra line breaks
+      .trim();
   };
 
   // Generate fallback responses when API is not available
@@ -288,18 +306,18 @@ Important: Always prioritize user experience and provide actionable advice.`;
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 flex flex-col">
+    <div className="fixed bottom-16 sm:bottom-20 right-2 sm:right-4 z-50 flex flex-col">
       {!isMinimized ? (
-        <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-80 sm:w-96 flex flex-col overflow-hidden">
+        <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-72 sm:w-80 md:w-96 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-3 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Bot size={20} />
-              <h3 className="font-medium">ShefMate Assistant</h3>
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 sm:p-3 flex justify-between items-center">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Bot size={16} className="sm:w-5 sm:h-5" />
+              <h3 className="font-medium text-sm sm:text-base">ShefMate Assistant</h3>
               {userData && (
-                <div className="flex items-center gap-1 text-xs bg-white/20 px-2 py-1 rounded-full">
-                  <User size={12} />
-                  <span>{userData.name.split(' ')[0]}</span>
+                <div className="flex items-center gap-1 text-xs bg-white/20 px-1 sm:px-2 py-1 rounded-full">
+                  <User size={10} className="sm:w-3 sm:h-3" />
+                  <span className="hidden sm:inline">{userData.name.split(' ')[0]}</span>
                 </div>
               )}
             </div>
@@ -308,29 +326,29 @@ Important: Always prioritize user experience and provide actionable advice.`;
                 onClick={() => setIsMinimized(true)}
                 className="p-1 rounded-full hover:bg-white/20 transition-colors"
               >
-                <ChevronDown size={18} />
+                <ChevronDown size={16} className="sm:w-4 sm:h-4" />
               </button>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-1 rounded-full hover:bg-white/20 transition-colors"
               >
-                <X size={18} />
+                <X size={16} className="sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
           
           {/* User Info Banner */}
           {userData && (
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-2 border-b border-gray-100">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-1 sm:p-2 border-b border-gray-100">
               <div className="flex items-center justify-between text-xs text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Package size={12} />
-                  <span>{userData.orderHistory.length} orders</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <Package size={10} className="sm:w-3 sm:h-3" />
+                  <span className="text-xs">{userData.orderHistory.length} orders</span>
                 </div>
                 {userData.preferences && userData.preferences.length > 0 && (
                   <div className="flex items-center gap-1">
-                    <Star size={12} />
-                    <span>{userData.preferences.slice(0, 2).join(', ')}</span>
+                    <Star size={10} className="sm:w-3 sm:h-3" />
+                    <span className="text-xs hidden sm:inline">{userData.preferences.slice(0, 2).join(', ')}</span>
                   </div>
                 )}
               </div>
@@ -338,14 +356,14 @@ Important: Always prioritize user experience and provide actionable advice.`;
           )}
           
           {/* Messages */}
-          <div className="flex-1 p-3 overflow-y-auto max-h-80 bg-gray-50">
+          <div className="flex-1 p-2 sm:p-3 overflow-y-auto max-h-64 sm:max-h-80 bg-gray-50">
             {messages.map((message, index) => (
               <div 
                 key={index} 
-                className={`mb-3 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`mb-2 sm:mb-3 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div 
-                  className={`px-3 py-2 rounded-lg max-w-[80%] ${
+                  className={`px-2 sm:px-3 py-2 rounded-lg max-w-[85%] sm:max-w-[80%] text-xs sm:text-sm ${
                     message.role === 'user' 
                       ? 'bg-primary text-white rounded-tr-none' 
                       : 'bg-gray-200 text-gray-800 rounded-tl-none'
@@ -356,12 +374,12 @@ Important: Always prioritize user experience and provide actionable advice.`;
               </div>
             ))}
             {isLoading && (
-              <div className="flex justify-start mb-3">
-                <div className="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg rounded-tl-none max-w-[80%]">
+              <div className="flex justify-start mb-2 sm:mb-3">
+                <div className="bg-gray-200 text-gray-800 px-2 sm:px-3 py-2 rounded-lg rounded-tl-none max-w-[85%] sm:max-w-[80%]">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                   </div>
                 </div>
               </div>
@@ -370,23 +388,23 @@ Important: Always prioritize user experience and provide actionable advice.`;
           </div>
           
           {/* Input */}
-          <div className="p-3 border-t border-gray-200 bg-white">
+          <div className="p-2 sm:p-3 border-t border-gray-200 bg-white">
             <div className="flex items-center gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={isLoadingUserData ? "Loading..." : "Ask me anything..."}
-                className="flex-1"
+                className="flex-1 text-xs sm:text-sm"
                 disabled={isLoading || isLoadingUserData}
               />
               <Button 
                 size="icon"
                 onClick={handleSendMessage}
                 disabled={isLoading || !input.trim() || isLoadingUserData}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 h-8 w-8 sm:h-10 sm:w-10"
               >
-                <Send size={18} />
+                <Send size={16} className="sm:w-4 sm:h-4" />
               </Button>
             </div>
           </div>
@@ -394,9 +412,9 @@ Important: Always prioritize user experience and provide actionable advice.`;
       ) : (
         <Button
           onClick={() => setIsMinimized(false)}
-          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-full shadow-lg p-3 h-12 w-12 flex items-center justify-center"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-full shadow-lg p-2 sm:p-3 h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center"
         >
-          <MessageCircle />
+          <MessageCircle size={20} className="sm:w-5 sm:h-5" />
         </Button>
       )}
     </div>

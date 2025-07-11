@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Home, ChefHat, BookOpen, MoreHorizontal } from 'lucide-react';
+import { Menu, Home, ChefHat, Users, MoreHorizontal } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -66,10 +66,10 @@ export function MobileTabBar() {
         <Button
           variant="ghost"
           size="icon"
-          className={`flex-1 ${location.pathname === '/learn' ? 'text-orange-500' : ''}`}
-          onClick={() => navigate('/learn')}
+          className={`flex-1 ${location.pathname === '/social' ? 'text-orange-500' : ''}`}
+          onClick={() => navigate('/social')}
         >
-          <BookOpen className="h-6 w-6" />
+          <Users className="h-6 w-6" />
         </Button>
 
         <DropdownMenu>

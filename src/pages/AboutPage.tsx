@@ -73,6 +73,19 @@ export function AboutPage() {
               />
               <h3 className="text-xl font-semibold">Shreyas Kumar</h3>
               <p className="text-muted-foreground">Co-Founder & CTO</p>
+              <div className="mt-2 text-sm text-muted-foreground">
+                <p>Username on all social media: <b>shkshreyas</b></p>
+                <p>Currently studying at <b>Vellore Institute of Technology, Chennai</b></p>
+                <p>Specialization: <b>Artificial Intelligence and Machine Learning</b></p>
+                <div className="flex justify-center gap-2 mt-2">
+                  <a href="https://twitter.com/shkshreyas" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><img src="/assets/twitter.svg" alt="Twitter" className="w-5 h-5" /></a>
+                  <a href="https://linkedin.com/in/shkshreyas" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><img src="/assets/linkedin.svg" alt="LinkedIn" className="w-5 h-5" /></a>
+                  <a href="https://instagram.com/shkshreyas" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><img src="/assets/instagram.svg" alt="Instagram" className="w-5 h-5" /></a>
+                  <a href="https://github.com/shkshreyas" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><img src="/assets/github.svg" alt="GitHub" className="w-5 h-5" /></a>
+                  <a href="https://facebook.com/shkshreyas" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><img src="/assets/facebook.svg" alt="Facebook" className="w-5 h-5" /></a>
+                </div>
+                <p className="mt-2 text-xs">Profile last updated: 10/07/2025</p>
+              </div>
             </div>
             <div className="text-center">
               <img 

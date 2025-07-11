@@ -120,131 +120,131 @@ export default function ChefDashboardPage() {
   const acceptedEarnings = acceptedOrders.reduce((sum, order) => sum + (order.price || 0), 0);
 
   return (
-    <div className="container mx-auto py-6 px-4 pb-20 md:pb-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Chef Dashboard</h1>
+    <div className="container mx-auto py-4 px-3 pb-20 md:pb-8">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Chef Dashboard</h1>
       
       {chef && (
-        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-4 sm:gap-6">
-            <div className="flex items-center gap-4">
+        <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3 sm:gap-4 md:gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               {chef.profileImage && (
                 <img 
                   src={chef.profileImage} 
                   alt={chef.displayName} 
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-primary"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full object-cover border-2 sm:border-4 border-primary mx-auto sm:mx-0"
                 />
               )}
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold">{chef.displayName}</h2>
-                <p className="text-gray-600">{chef.location}</p>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  <Badge className="bg-primary text-white">
+              <div className="text-center sm:text-left">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{chef.displayName}</h2>
+                <p className="text-gray-600 text-sm sm:text-base">{chef.location}</p>
+                <div className="mt-1 flex flex-wrap gap-1 sm:gap-2 justify-center sm:justify-start">
+                  <Badge className="bg-primary text-white text-xs">
                     {chef.experienceYears} years experience
                   </Badge>
-                  <Badge className="bg-gray-800 text-white">
+                  <Badge className="bg-gray-800 text-white text-xs">
                     {chef.rating || '0'} ★ Rating
                   </Badge>
                 </div>
               </div>
             </div>
             
-            <div className="md:ml-auto grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 md:mt-0">
-              <div className="text-center bg-gray-50 p-3 rounded-lg">
-                <p className="text-gray-500 text-xs sm:text-sm">Total Orders</p>
-                <p className="text-xl sm:text-2xl font-semibold">{chef.totalOrders || 0}</p>
+            <div className="lg:ml-auto grid grid-cols-3 gap-2 sm:gap-3 mt-3 lg:mt-0">
+              <div className="text-center bg-gray-50 p-2 sm:p-3 rounded-lg">
+                <p className="text-gray-500 text-xs">Total Orders</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-semibold">{chef.totalOrders || 0}</p>
               </div>
-              <div className="text-center bg-gray-50 p-3 rounded-lg">
-                <p className="text-gray-500 text-xs sm:text-sm">Customers</p>
-                <p className="text-xl sm:text-2xl font-semibold">{chef.customersServed || 0}</p>
+              <div className="text-center bg-gray-50 p-2 sm:p-3 rounded-lg">
+                <p className="text-gray-500 text-xs">Customers</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-semibold">{chef.customersServed || 0}</p>
               </div>
-              <div className="text-center bg-green-50 p-3 rounded-lg">
-                <p className="text-green-700 text-xs sm:text-sm">Earnings</p>
-                <p className="text-xl sm:text-2xl font-semibold text-green-700">₹{totalEarnings}</p>
+              <div className="text-center bg-green-50 p-2 sm:p-3 rounded-lg">
+                <p className="text-green-700 text-xs">Earnings</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-semibold text-green-700">₹{totalEarnings}</p>
               </div>
             </div>
           </div>
           
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button onClick={() => navigate('/become-chef')} variant="outline" size="sm" className="text-sm">
+          <div className="mt-3 sm:mt-4 flex flex-wrap gap-2 justify-center sm:justify-start">
+            <Button onClick={() => navigate('/become-chef')} variant="outline" size="sm" className="text-xs sm:text-sm">
               Edit Profile
             </Button>
-            <Button onClick={() => navigate(`/chefs/${chef.id}`)} variant="outline" size="sm" className="text-sm">
+            <Button onClick={() => navigate(`/chefs/${chef.id}`)} variant="outline" size="sm" className="text-xs sm:text-sm">
               View Public Profile
             </Button>
           </div>
         </div>
       )}
       
-      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
-        <h3 className="text-lg sm:text-xl font-semibold mb-4">Orders Overview</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
+        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Orders Overview</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
+            <CardHeader className="pb-2 pt-3 px-2 sm:px-3">
+              <CardTitle className="text-xs sm:text-sm md:text-lg">Pending</CardTitle>
             </CardHeader>
-            <CardContent className="pb-3 pt-0 px-3">
-              <div className="flex justify-between">
-                <p className="text-2xl font-bold">{pendingOrders.length}</p>
-                <p className="text-lg font-semibold text-yellow-600">₹{pendingEarnings}</p>
+            <CardContent className="pb-3 pt-0 px-2 sm:px-3">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{pendingOrders.length}</p>
+                <p className="text-sm sm:text-lg font-semibold text-yellow-600">₹{pendingEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm sm:text-lg">Accepted</CardTitle>
+            <CardHeader className="pb-2 pt-3 px-2 sm:px-3">
+              <CardTitle className="text-xs sm:text-sm md:text-lg">Accepted</CardTitle>
             </CardHeader>
-            <CardContent className="pb-3 pt-0 px-3">
-              <div className="flex justify-between">
-                <p className="text-2xl font-bold">{acceptedOrders.length}</p>
-                <p className="text-lg font-semibold text-blue-600">₹{acceptedEarnings}</p>
+            <CardContent className="pb-3 pt-0 px-2 sm:px-3">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{acceptedOrders.length}</p>
+                <p className="text-sm sm:text-lg font-semibold text-blue-600">₹{acceptedEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
+            <CardHeader className="pb-2 pt-3 px-2 sm:px-3">
+              <CardTitle className="text-xs sm:text-sm md:text-lg">Completed</CardTitle>
             </CardHeader>
-            <CardContent className="pb-3 pt-0 px-3">
-              <div className="flex justify-between">
-                <p className="text-2xl font-bold">{completedOrders.length}</p>
-                <p className="text-lg font-semibold text-green-600">₹{totalEarnings}</p>
+            <CardContent className="pb-3 pt-0 px-2 sm:px-3">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{completedOrders.length}</p>
+                <p className="text-sm sm:text-lg font-semibold text-green-600">₹{totalEarnings}</p>
               </div>
             </CardContent>
           </Card>
           
           <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-2 pt-3 px-3">
-              <CardTitle className="text-sm sm:text-lg">Cancelled</CardTitle>
+            <CardHeader className="pb-2 pt-3 px-2 sm:px-3">
+              <CardTitle className="text-xs sm:text-sm md:text-lg">Cancelled</CardTitle>
             </CardHeader>
-            <CardContent className="pb-3 pt-0 px-3">
-              <p className="text-2xl font-bold">{cancelledOrders.length}</p>
+            <CardContent className="pb-3 pt-0 px-2 sm:px-3">
+              <p className="text-lg sm:text-xl md:text-2xl font-bold">{cancelledOrders.length}</p>
             </CardContent>
           </Card>
         </div>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
-          <TabsTrigger value="pending" className="relative">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1">
+          <TabsTrigger value="pending" className="relative text-xs sm:text-sm whitespace-nowrap">
             Pending
             {pendingOrders.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 {pendingOrders.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="accepted" className="relative">
+          <TabsTrigger value="accepted" className="relative text-xs sm:text-sm whitespace-nowrap">
             Accepted
             {acceptedOrders.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                 {acceptedOrders.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+          <TabsTrigger value="completed" className="text-xs sm:text-sm whitespace-nowrap">Completed</TabsTrigger>
+          <TabsTrigger value="cancelled" className="text-xs sm:text-sm whitespace-nowrap">Cancelled</TabsTrigger>
         </TabsList>
         
         <TabsContent value="pending" className="space-y-4">
@@ -359,19 +359,21 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
   return (
     <Card className="overflow-hidden border-0 shadow-md rounded-xl">
       <CardHeader className="pb-2 bg-gray-50">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <div>
-            <CardTitle className="text-base sm:text-lg">{order.serviceName}</CardTitle>
-            <CardDescription>Order #{order.id.substring(0, 8)}</CardDescription>
+            <CardTitle className="text-sm sm:text-base md:text-lg">{order.serviceName}</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Order #{order.id.substring(0, 8)}</CardDescription>
           </div>
-          {getStatusBadge(order.status)}
+          <div className="self-start sm:self-auto">
+            {getStatusBadge(order.status)}
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+      <CardContent className="pt-3 sm:pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm">
           <div>
             <p className="text-gray-500">Customer</p>
-            <p className="font-medium">{order.userName}</p>
+            <p className="font-medium truncate">{order.userName}</p>
           </div>
           <div>
             <p className="text-gray-500">Price</p>
@@ -385,25 +387,25 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
             <p className="text-gray-500">Time</p>
             <p>{order.orderTime || 'N/A'}</p>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-1 sm:col-span-2">
             <p className="text-gray-500">Location</p>
             <p className="truncate">{order.orderLocation}</p>
           </div>
           {order.orderNotes && (
-            <div className="col-span-2">
+            <div className="col-span-1 sm:col-span-2">
               <p className="text-gray-500">Notes</p>
-              <p>{order.orderNotes}</p>
+              <p className="text-xs sm:text-sm break-words">{order.orderNotes}</p>
             </div>
           )}
         </div>
       </CardContent>
-      <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-4 bg-gray-50">
+      <CardFooter className="flex flex-wrap gap-2 pt-0 border-t mt-3 sm:mt-4 bg-gray-50 p-3">
         {order.customerMobile && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={handleCallCustomer}
-            className="text-sm"
+            className="text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Call Customer
           </Button>
@@ -414,7 +416,7 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
             variant="default"
             size="sm"
             onClick={() => onUpdateStatus(order.id, 'accepted')}
-            className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
+            className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Accept Order
           </Button>
@@ -425,7 +427,7 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
             variant="outline"
             size="sm"
             onClick={() => onUpdateStatus(order.id, 'cancelled')}
-            className="text-red-500 border-red-200 hover:bg-red-50 text-sm"
+            className="text-red-500 border-red-200 hover:bg-red-50 text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Decline
           </Button>
@@ -436,7 +438,7 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
             variant="default"
             size="sm"
             onClick={() => onUpdateStatus(order.id, 'completed')}
-            className="bg-green-500 hover:bg-green-600 text-white text-sm"
+            className="bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Mark Completed
           </Button>

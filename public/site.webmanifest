@@ -13,85 +13,31 @@
   "categories": ["food", "lifestyle", "business", "utilities"],
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
-      "sizes": "192x192",
+      "src": "/assets/icon.png",
+      "sizes": "350x350",
       "type": "image/png",
       "purpose": "maskable any"
-    },
-    {
-      "src": "/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png"
-    },
-    {
-      "src": "/favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "/favicon-16x16.png",
-      "sizes": "16x16",
-      "type": "image/png"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "ShefMate Homepage - Browse Professional Chefs"
-    },
-    {
-      "src": "/screenshot-narrow.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "ShefMate Mobile - Book Your Personal Chef"
-    }
-  ],
+
   "shortcuts": [
     {
       "name": "Browse Chefs",
       "short_name": "Chefs",
       "description": "Browse and book professional chefs",
-      "url": "/chefs",
-      "icons": [
-        {
-          "src": "/chef-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/chefs"
     },
     {
       "name": "My Orders",
       "short_name": "Orders",
       "description": "View your booking history",
-      "url": "/orders",
-      "icons": [
-        {
-          "src": "/order-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/orders"
     },
     {
       "name": "Become a Chef",
       "short_name": "Join",
       "description": "Register as a professional chef",
-      "url": "/become-chef",
-      "icons": [
-        {
-          "src": "/join-icon.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/become-chef"
     }
   ],
   "related_applications": [

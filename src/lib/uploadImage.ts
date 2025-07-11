@@ -1,4 +1,5 @@
-export async function uploadImageToFreeImageHost(imageFile: File): Promise<string> {
+export async function uploadImage(imageFile: File): Promise<string> {
+// ...existing code...
   try {
     console.log('Starting image upload, file size:', Math.round(imageFile.size / 1024), 'KB');
     

@@ -148,7 +148,7 @@ export function Header() {
   };
 
   const handleLearn = () => {
-    navigate('/learn');
+    navigate('/social');
   };
   
   const handleOrders = () => {
@@ -249,7 +249,7 @@ export function Header() {
             onClick={handleLearn}
             className="font-medium text-base px-4"
           >
-            Learn
+            Social
           </Button>
 
           {user && (

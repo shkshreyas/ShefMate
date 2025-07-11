@@ -29,6 +29,7 @@ export default function BecomeChefPage() {
   const [experience, setExperience] = useState('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [customImageUploaded, setCustomImageUploaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showServiceForm, setShowServiceForm] = useState(false);
@@ -75,6 +76,17 @@ export default function BecomeChefPage() {
     checkIfChefExists();
   }, [isLoaded, user, navigate]);
 
+  // Set default profile image from Clerk user and update when it changes
+  useEffect(() => {
+    if (user && !customImageUploaded) {
+      // Use Clerk profile image as default
+      const clerkImageUrl = user.imageUrl;
+      if (clerkImageUrl) {
+        setProfileImageUrl(clerkImageUrl);
+      }
+    }
+  }, [user?.imageUrl, customImageUploaded]);
+
   // Rotating quote with fade animation
   useEffect(() => {
     quoteTimeout.current = setTimeout(() => setQuoteFade(false), 2700);
@@ -91,14 +103,13 @@ export default function BecomeChefPage() {
     };
   }, []);
 
-  // Image preview
+  // Image preview for uploaded files
   useEffect(() => {
     if (profileImage) {
       const url = URL.createObjectURL(profileImage);
       setProfileImageUrl(url);
+      setCustomImageUploaded(true);
       return () => URL.revokeObjectURL(url);
-    } else {
-      setProfileImageUrl(null);
     }
   }, [profileImage]);
 
@@ -272,12 +283,15 @@ export default function BecomeChefPage() {
       experience,
       phoneNumber,
       hasProfileImage: !!profileImage,
+      hasClerkImage: !!user?.imageUrl,
+      customImageUploaded,
       profileImageSize: profileImage ? Math.round(profileImage.size / 1024) + ' KB' : 'N/A'
     });
     
-    // Upload profile image if exists
+    // Handle profile image - use uploaded image or Clerk profile image
     let imageUrl = null;
     if (profileImage) {
+      // User uploaded a custom image
       try {
         setImageUploading(true);
         setUploadProgress(10);
@@ -303,6 +317,10 @@ export default function BecomeChefPage() {
         setImageUploading(false);
         return;
       }
+    } else if (user?.imageUrl && !customImageUploaded) {
+      // Use Clerk profile image
+      imageUrl = user.imageUrl;
+      console.log('Using Clerk profile image:', imageUrl);
     }
 
     // Register the chef in Firebase using the utility function
@@ -562,30 +580,58 @@ export default function BecomeChefPage() {
                           backgroundPosition: 'center'
                         }}
                       >
-                        {!profileImageUrl && <span className="text-gray-400">Photo</span>}
+                        {!profileImageUrl && !user?.imageUrl && <span className="text-gray-400">Photo</span>}
+                        {!profileImageUrl && user?.imageUrl && (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                          </div>
+                        )}
                         {imageUploading && (
                           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                             <div className="text-white text-sm font-semibold">{uploadProgress}%</div>
                           </div>
                         )}
                       </div>
-                      <input
-                        type="file"
-                        id="profileImage"
-                        accept="image/*"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            setProfileImage(e.target.files[0]);
-                          }
-                        }}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="profileImage"
-                        className="text-sm text-primary font-medium cursor-pointer hover:underline"
-                      >
-                        {profileImageUrl ? 'Change Photo' : 'Upload Photo'}
-                      </label>
+                      
+                      <div className="flex flex-col gap-2 items-center">
+                        <input
+                          type="file"
+                          id="profileImage"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              setProfileImage(e.target.files[0]);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="profileImage"
+                          className="text-sm text-primary font-medium cursor-pointer hover:underline"
+                        >
+                          {customImageUploaded ? 'Change Photo' : 'Upload Custom Photo'}
+                        </label>
+                        
+                        {user?.imageUrl && customImageUploaded && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProfileImage(null);
+                              setCustomImageUploaded(false);
+                              setProfileImageUrl(user.imageUrl);
+                            }}
+                            className="text-sm text-gray-600 hover:text-primary cursor-pointer"
+                          >
+                            Use Clerk Profile Photo
+                          </button>
+                        )}
+                        
+                        {user?.imageUrl && !customImageUploaded && (
+                          <div className="text-xs text-gray-500 text-center">
+                            Using your Clerk profile photo
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -655,7 +701,7 @@ export default function BecomeChefPage() {
                     <button
                       type="submit"
                       className="px-6 py-3 bg-primary text-white font-medium rounded-lg shadow hover:bg-primary/90 transition-colors w-full sm:w-auto"
-                      disabled={loading || !profileImage}
+                      disabled={loading}
                     >
                       {loading ? 'Saving...' : 'Continue to Services'}
                     </button>
