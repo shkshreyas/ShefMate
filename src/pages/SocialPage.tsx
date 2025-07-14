@@ -28,6 +28,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { addDoc, collection, getDocs, query, orderBy, limit, updateDoc, doc, arrayUnion, arrayRemove, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { uploadImage } from '@/lib/uploadImage';
+import { useClerk } from '@clerk/clerk-react';
 
 interface Post {
   id: string;
@@ -62,6 +63,7 @@ interface Comment {
 
 export default function SocialPage() {
   const { user, isLoaded } = useUser();
+  const clerk = useClerk();
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
@@ -247,6 +249,14 @@ export default function SocialPage() {
     }));
   };
 
+  const handleOpenCreatePost = () => {
+    if (!user && isLoaded) {
+      clerk.openSignIn();
+      return;
+    }
+    setIsCreatingPost(true);
+  };
+
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -276,11 +286,9 @@ export default function SocialPage() {
             </Button>
           </div>
           <Dialog open={isCreatingPost} onOpenChange={setIsCreatingPost}>
-            <DialogTrigger asChild>
-              <Button size="icon" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
-                <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </DialogTrigger>
+            <Button size="icon" onClick={handleOpenCreatePost} className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-8 w-8 sm:h-10 sm:w-10">
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+            </Button>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Create Post</DialogTitle>

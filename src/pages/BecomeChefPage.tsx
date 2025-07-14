@@ -1,4 +1,5 @@
 import { useUser, useSignIn } from '@clerk/clerk-react';
+import { useClerk } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import icon from '../assets/icon.png';
@@ -22,6 +23,7 @@ const STEPS = ['Profile', 'Services', 'Summary'];
 
 export default function BecomeChefPage() {
   const { user, isLoaded } = useUser();
+  const clerk = useClerk();
   const { signIn } = useSignIn();
   const navigate = useNavigate();
   const [bio, setBio] = useState('');
@@ -50,9 +52,9 @@ export default function BecomeChefPage() {
 
   useEffect(() => {
     if (isLoaded && !user) {
-      window.location.href = '/sign-in';
+      clerk.openSignIn();
     }
-  }, [user, isLoaded]);
+  }, [user, isLoaded, clerk]);
 
   // Check if user is already a chef and redirect to dashboard if so
   useEffect(() => {

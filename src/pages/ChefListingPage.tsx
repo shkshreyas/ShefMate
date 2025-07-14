@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getAllChefs } from '@/lib/firebase-utils';
+import { useUser } from '@clerk/clerk-react';
+import { useClerk } from '@clerk/clerk-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bot, Search, MapPin, Star, Clock, CheckCircle } from 'lucide-react';
 
 export default function ChefListingPage() {
+  const { user, isLoaded } = useUser();
+  const clerk = useClerk();
+  const navigate = useNavigate();
+  // Open Clerk sign-in modal if not authenticated
+  useEffect(() => {
+    if (isLoaded && !user) {
+      clerk.openSignIn();
+    }
+  }, [isLoaded, user, clerk]);
+  if (isLoaded && !user) return null;
+
   const [chefs, setChefs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
