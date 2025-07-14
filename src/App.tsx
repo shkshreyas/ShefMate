@@ -27,9 +27,11 @@ import ChefListingPage from './pages/ChefListingPage';
 import AdminPage from './pages/AdminPage';
 import SocialPage from './pages/SocialPage';
 import { Toaster } from '@/components/ui/toaster';
+import { FaGooglePlay, FaApple } from 'react-icons/fa';
 
 function AppContent() {
   const [isPricingOpen, setIsPricingOpen] = useState(false);
+  const [showAppBanner, setShowAppBanner] = useState(true);
   const navigate = useNavigate();
 
   // Listen for custom events from the Header component
@@ -60,7 +62,33 @@ function AppContent() {
       
       {/* Add padding for the header */}
       <div className="pt-20"></div>
-      
+
+      {/* Compact Mobile App Download Banner with Close Button */}
+      {showAppBanner && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-xs sm:max-w-sm md:max-w-md px-2 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3 border-2 border-white/40 animate-fade-in-up w-full relative">
+            <button
+              aria-label="Close"
+              className="absolute top-1 right-1 text-white/80 hover:text-white text-lg font-bold rounded-full p-1 transition-colors z-10"
+              onClick={() => setShowAppBanner(false)}
+              style={{ lineHeight: 1 }}
+            >
+              ×
+            </button>
+            <div className="flex-1 min-w-0">
+              <div className="text-white font-bold text-base leading-tight truncate">Get the ShefMate App</div>
+              <div className="text-white/90 text-xs leading-tight truncate">Book chefs, manage orders, chat on the go!</div>
+            </div>
+            <a href="https://github.com/shkshreyas/ShefMate-Android/releases/download/v1.0/shefmate.apk" target="_blank" rel="noopener noreferrer" className="ml-2">
+              <button className="bg-white text-orange-600 font-bold px-3 py-1 rounded-lg shadow hover:bg-orange-100 text-xs flex items-center gap-1 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                Download APK
+              </button>
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Main Hero Section */}
       <ShuffleHero onBookClick={handleBookChef} />
       
