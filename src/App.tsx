@@ -107,7 +107,7 @@ function AppContent() {
         </DialogContent>
       </Dialog>
       
-      {/* AI Chatbot */}
+      {/* AI Chatbot - Only on home screen */}
       <AIChatbot />
       
       {/* Mobile Tab Bar - Only visible on mobile */}

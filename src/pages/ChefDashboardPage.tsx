@@ -121,12 +121,12 @@ export default function ChefDashboardPage() {
 
   return (
     <div className="container mx-auto py-4 px-3 pb-20 md:pb-8">
-      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">Chef Dashboard</h1>
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-center">Chef Dashboard</h1>
       
       {chef && (
-        <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
+        <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 max-w-4xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-center gap-3 sm:gap-4 md:gap-6">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-grow">
               {chef.profileImage && (
                 <img 
                   src={chef.profileImage} 
@@ -148,7 +148,7 @@ export default function ChefDashboardPage() {
               </div>
             </div>
             
-            <div className="lg:ml-auto grid grid-cols-3 gap-2 sm:gap-3 mt-3 lg:mt-0">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:ml-auto lg:flex-shrink-0">
               <div className="text-center bg-gray-50 p-2 sm:p-3 rounded-lg">
                 <p className="text-gray-500 text-xs">Total Orders</p>
                 <p className="text-lg sm:text-xl md:text-2xl font-semibold">{chef.totalOrders || 0}</p>
@@ -164,7 +164,7 @@ export default function ChefDashboardPage() {
             </div>
           </div>
           
-          <div className="mt-3 sm:mt-4 flex flex-wrap gap-2 justify-center sm:justify-start">
+          <div className="mt-3 sm:mt-4 flex flex-wrap gap-2 justify-center">
             <Button onClick={() => navigate('/become-chef')} variant="outline" size="sm" className="text-xs sm:text-sm">
               Edit Profile
             </Button>
@@ -175,8 +175,8 @@ export default function ChefDashboardPage() {
         </div>
       )}
       
-      <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Orders Overview</h3>
+      <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 max-w-4xl mx-auto">
+        <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 text-center">Orders Overview</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <Card className="border-0 shadow-sm">
             <CardHeader className="pb-2 pt-3 px-2 sm:px-3">
@@ -225,94 +225,96 @@ export default function ChefDashboardPage() {
         </div>
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4 w-full justify-start overflow-x-auto h-auto p-1">
-          <TabsTrigger value="pending" className="relative text-xs sm:text-sm whitespace-nowrap">
-            Pending
-            {pendingOrders.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-                {pendingOrders.length}
-              </span>
+      <div className="max-w-4xl mx-auto">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="mb-4 w-full grid grid-cols-4 h-auto p-1">
+            <TabsTrigger value="pending" className="relative text-xs sm:text-sm">
+              Pending
+              {pendingOrders.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                  {pendingOrders.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="accepted" className="relative text-xs sm:text-sm">
+              Accepted
+              {acceptedOrders.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                  {acceptedOrders.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="text-xs sm:text-sm">Completed</TabsTrigger>
+            <TabsTrigger value="cancelled" className="text-xs sm:text-sm">Cancelled</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="pending" className="space-y-4">
+            {pendingOrders.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+                <p className="text-gray-500">No pending orders</p>
+              </div>
+            ) : (
+              pendingOrders.map(order => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  onUpdateStatus={handleUpdateOrderStatus}
+                  showAcceptButton
+                />
+              ))
             )}
-          </TabsTrigger>
-          <TabsTrigger value="accepted" className="relative text-xs sm:text-sm whitespace-nowrap">
-            Accepted
-            {acceptedOrders.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-                {acceptedOrders.length}
-              </span>
+          </TabsContent>
+          
+          <TabsContent value="accepted" className="space-y-4">
+            {acceptedOrders.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+                <p className="text-gray-500">No accepted orders</p>
+              </div>
+            ) : (
+              acceptedOrders.map(order => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  onUpdateStatus={handleUpdateOrderStatus}
+                  showCompleteButton
+                />
+              ))
             )}
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="text-xs sm:text-sm whitespace-nowrap">Completed</TabsTrigger>
-          <TabsTrigger value="cancelled" className="text-xs sm:text-sm whitespace-nowrap">Cancelled</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="pending" className="space-y-4">
-          {pendingOrders.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-gray-500">No pending orders</p>
-            </div>
-          ) : (
-            pendingOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={handleUpdateOrderStatus}
-                showAcceptButton
-              />
-            ))
-          )}
-        </TabsContent>
-        
-        <TabsContent value="accepted" className="space-y-4">
-          {acceptedOrders.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-gray-500">No accepted orders</p>
-            </div>
-          ) : (
-            acceptedOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={handleUpdateOrderStatus}
-                showCompleteButton
-              />
-            ))
-          )}
-        </TabsContent>
-        
-        <TabsContent value="completed" className="space-y-4">
-          {completedOrders.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-gray-500">No completed orders</p>
-            </div>
-          ) : (
-            completedOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={handleUpdateOrderStatus}
-              />
-            ))
-          )}
-        </TabsContent>
-        
-        <TabsContent value="cancelled" className="space-y-4">
-          {cancelledOrders.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-gray-500">No cancelled orders</p>
-            </div>
-          ) : (
-            cancelledOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={handleUpdateOrderStatus}
-              />
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+          
+          <TabsContent value="completed" className="space-y-4">
+            {completedOrders.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+                <p className="text-gray-500">No completed orders</p>
+              </div>
+            ) : (
+              completedOrders.map(order => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))
+            )}
+          </TabsContent>
+          
+          <TabsContent value="cancelled" className="space-y-4">
+            {cancelledOrders.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+                <p className="text-gray-500">No cancelled orders</p>
+              </div>
+            ) : (
+              cancelledOrders.map(order => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  onUpdateStatus={handleUpdateOrderStatus}
+                />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
@@ -446,4 +448,4 @@ function OrderCard({ order, onUpdateStatus, showAcceptButton, showCompleteButton
       </CardFooter>
     </Card>
   );
-} 
+}
